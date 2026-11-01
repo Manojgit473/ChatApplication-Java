@@ -900,6 +900,14 @@
 /* --------------------------------------------------------
    5. Modals & Dialogs
    -------------------------------------------------------- */
+.hidden {
+    display: none !important;
+}
+
+.modal-overlay.hidden {
+    display: none !important;
+}
+
 .modal-overlay {
     position: fixed;
     top: 0;

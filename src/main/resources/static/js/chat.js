@@ -169,6 +169,9 @@ const ChatApp = (() => {
             if (res && res.data) {
                 state.conversations = res.data;
                 renderConversationsList();
+                if (!state.activeConversationId && state.conversations.length > 0) {
+                    openConversation(state.conversations[0].id);
+                }
             }
         } catch (err) {
             showToast('Failed to load conversations', 'error');

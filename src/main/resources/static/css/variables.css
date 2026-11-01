@@ -99,3 +99,9 @@ a:hover {
     color: var(--primary-teal);
 }
 
+/* Global utility classes */
+.hidden {
+    display: none !important;
+}
+
+
