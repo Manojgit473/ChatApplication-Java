@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - Connect Chat</title>
+    <link rel="stylesheet" th:href="@{/css/variables.css}" href="/css/variables.css">
+    <link rel="stylesheet" th:href="@{/css/auth.css}" href="/css/auth.css">
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </div>
+                <h1 class="auth-title">Welcome to Connect Chat</h1>
+                <p class="auth-subtitle">Sign in to join real-time conversations</p>
+            </div>
+
+            <div id="alertBox" class="alert-box alert-danger hidden"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="usernameOrEmail">Username or Email</label>
+                    <input type="text" id="usernameOrEmail" class="form-input" placeholder="e.g. alex or alex@example.com" required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="btn-primary">Sign In</button>
+            </form>
+
+            <div class="demo-credentials-box">
+                <strong>Viva Demo Pre-Seeded Accounts:</strong>
+                Username: <code>alex</code> | Password: <code>Password@123</code><br>
+                Username: <code>samira</code> | Password: <code>Password@123</code>
+            </div>
+
+            <div class="auth-footer">
+                Don't have an account yet? <a th:href="@{/register}" href="/register">Create one</a>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/api.js}" src="/js/api.js"></script>
+    <script th:src="@{/js/auth.js}" src="/js/auth.js"></script>
+</body>
+</html>

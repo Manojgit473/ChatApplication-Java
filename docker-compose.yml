@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: connect_chat_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: connect_chat_db
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_USER: chatuser
+      MYSQL_PASSWORD: chatpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - connect_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: connect_chat_app
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SERVER_PORT: 8080
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: connect_chat_db
+      DB_USERNAME: chatuser
+      DB_PASSWORD: chatpassword
+      UPLOAD_DIR: uploads/attachments
+    volumes:
+      - app_uploads:/app/uploads
+    networks:
+      - connect_network
+
+volumes:
+  mysql_data:
+  app_uploads:
+
+networks:
+  connect_network:
+    driver: bridge

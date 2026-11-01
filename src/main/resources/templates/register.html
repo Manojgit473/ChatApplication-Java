@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - Connect Chat</title>
+    <link rel="stylesheet" th:href="@{/css/variables.css}" href="/css/variables.css">
+    <link rel="stylesheet" th:href="@{/css/auth.css}" href="/css/auth.css">
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7.5" r="4"></circle>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="23" y1="11" x2="17" y2="11"></line>
+                    </svg>
+                </div>
+                <h1 class="auth-title">Create Account</h1>
+                <p class="auth-subtitle">Join Connect Chat with soft teal modern design</p>
+            </div>
+
+            <div id="alertBox" class="alert-box alert-danger hidden"></div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label class="form-label" for="displayName">Full / Display Name</label>
+                    <input type="text" id="displayName" class="form-input" placeholder="e.g. Alex Morgan" required autocomplete="name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="username">Username</label>
+                    <input type="text" id="username" class="form-input" placeholder="e.g. alex" required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" id="email" class="form-input" placeholder="e.g. alex@example.com" required autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Password (min 6 characters)</label>
+                    <input type="password" id="password" class="form-input" placeholder="••••••••" required autocomplete="new-password">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" class="form-input" placeholder="••••••••" required autocomplete="new-password">
+                </div>
+
+                <button type="submit" class="btn-primary">Create Account</button>
+            </form>
+
+            <div class="auth-footer">
+                Already registered? <a th:href="@{/login}" href="/login">Sign in</a>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/api.js}" src="/js/api.js"></script>
+    <script th:src="@{/js/auth.js}" src="/js/auth.js"></script>
+</body>
+</html>

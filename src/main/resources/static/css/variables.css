@@ -1,0 +1,100 @@
+/* ========================================================
+   Connect Chat - Design System Variables
+   Color Palette: Soft Teal, White, Light Slate, Warm Off-White
+   ======================================================== */
+
+:root {
+    /* Primary Teal Palette */
+    --primary-teal: #5AAFA5;
+    --primary-teal-hover: #4C9E94;
+    --dark-teal: #347F78;
+    --darker-teal: #245A55;
+    --teal-tint: #EBF5F3;
+    --teal-tint-subtle: #F4FAF8;
+    --teal-border-light: #D3E6E2;
+
+    /* Neutrals & Surfaces */
+    --bg-page: #F7F9F8;
+    --bg-surface: #FFFFFF;
+    --bg-surface-secondary: #F2F5F4;
+    --bg-surface-hover: #EAEFEA;
+    --bg-surface-active: #E1E8E6;
+
+    /* Borders & Dividers */
+    --border-color: #E6ECE9;
+    --border-color-dark: #D3DBD7;
+    --border-focus: #5AAFA5;
+
+    /* Typography & Content Colors */
+    --text-primary: #263632;
+    --text-secondary: #6B7C76;
+    --text-muted: #8E9E99;
+    --text-on-teal: #FFFFFF;
+
+    /* Status & Feedback */
+    --status-online: #3D9E71;
+    --status-away: #E0983A;
+    --status-offline: #A6B4AF;
+    --status-danger: #D64545;
+    --status-danger-bg: #FDEDED;
+    --status-success: #4D9A76;
+    --status-success-bg: #EDF7F2;
+
+    /* Message Bubbles */
+    --bubble-sent-bg: #5AAFA5;
+    --bubble-sent-text: #FFFFFF;
+    --bubble-received-bg: #FFFFFF;
+    --bubble-received-text: #263632;
+    --bubble-received-border: #E6ECE9;
+
+    /* Shadows & Elevation */
+    --shadow-subtle: 0 1px 3px rgba(38, 54, 50, 0.05);
+    --shadow-card: 0 4px 12px rgba(38, 54, 50, 0.06);
+    --shadow-elevated: 0 10px 25px rgba(38, 54, 50, 0.08);
+    --shadow-modal: 0 16px 36px rgba(38, 54, 50, 0.12);
+
+    /* Radii */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-full: 9999px;
+
+    /* Transitions */
+    --transition-fast: 0.15s ease-in-out;
+    --transition-normal: 0.25s ease-in-out;
+
+    /* Layout Dimensions */
+    --nav-width: 68px;
+    --sidebar-width: 340px;
+    --details-width: 320px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-primary);
+    background-color: var(--bg-page);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+button, input, textarea, select {
+    font-family: inherit;
+    font-size: inherit;
+}
+
+a {
+    color: var(--dark-teal);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+a:hover {
+    color: var(--primary-teal);
+}

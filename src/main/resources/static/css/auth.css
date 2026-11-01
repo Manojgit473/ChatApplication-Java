@@ -1,0 +1,179 @@
+/* ========================================================
+   Connect Chat - Authentication Styles (Login & Register)
+   ======================================================== */
+
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: radial-gradient(circle at 10% 20%, rgba(90, 175, 165, 0.08) 0%, rgba(247, 249, 248, 1) 90%);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: 36px 32px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.auth-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    background: var(--teal-tint);
+    color: var(--dark-teal);
+    border-radius: var(--radius-md);
+    margin-bottom: 16px;
+}
+
+.auth-logo svg {
+    width: 28px;
+    height: 28px;
+}
+
+.auth-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+}
+
+.auth-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.form-input {
+    width: 100%;
+    height: 42px;
+    padding: 8px 14px;
+    background: var(--bg-surface-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: all var(--transition-fast);
+}
+
+.form-input:focus {
+    outline: none;
+    background: var(--bg-surface);
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(90, 175, 165, 0.15);
+}
+
+.form-input::placeholder {
+    color: var(--text-muted);
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 44px;
+    padding: 0 20px;
+    background: var(--primary-teal);
+    color: var(--text-on-teal);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--transition-fast), transform 0.05s ease;
+    margin-top: 8px;
+}
+
+.btn-primary:hover {
+    background: var(--primary-teal-hover);
+}
+
+.btn-primary:active {
+    transform: scale(0.99);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.auth-footer a {
+    font-weight: 500;
+    margin-left: 4px;
+}
+
+.alert-box {
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert-danger {
+    background: var(--status-danger-bg);
+    color: var(--status-danger);
+    border: 1px solid rgba(214, 69, 69, 0.2);
+}
+
+.alert-success {
+    background: var(--status-success-bg);
+    color: var(--status-success);
+    border: 1px solid rgba(77, 154, 118, 0.2);
+}
+
+.hidden {
+    display: none !important;
+}
+
+.demo-credentials-box {
+    margin-top: 20px;
+    padding: 12px;
+    background: var(--teal-tint-subtle);
+    border: 1px dashed var(--teal-border-light);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--darker-teal);
+}
+
+.demo-credentials-box strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--dark-teal);
+}
