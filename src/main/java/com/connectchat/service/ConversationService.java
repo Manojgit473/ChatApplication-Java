@@ -23,3 +23,4 @@ public interface ConversationService {
 
     void markConversationAsRead(Long conversationId, Long userId);
 }
+

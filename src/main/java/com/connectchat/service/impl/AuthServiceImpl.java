@@ -118,3 +118,4 @@ public class AuthServiceImpl implements AuthService {
         return userMapper.toProfileDto(user);
     }
 }
+

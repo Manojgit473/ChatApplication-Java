@@ -51,3 +51,4 @@ public class ProfileUpdateRequest {
         this.avatarUrl = avatarUrl;
     }
 }
+

@@ -18,3 +18,4 @@ class ConnectChatApplicationTests {
         // Verifies Spring ApplicationContext and all Bean definitions load without conflict
     }
 }
+

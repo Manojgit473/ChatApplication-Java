@@ -91,3 +91,4 @@ class MessageServiceTest {
         verify(messagingTemplate, times(1)).convertAndSend(eq("/topic/conversations/10"), eq(dto));
     }
 }
+

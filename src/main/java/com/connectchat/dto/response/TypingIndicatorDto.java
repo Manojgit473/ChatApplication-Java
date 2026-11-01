@@ -42,3 +42,4 @@ public class TypingIndicatorDto {
         this.typing = typing;
     }
 }
+

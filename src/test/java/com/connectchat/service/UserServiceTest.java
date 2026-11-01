@@ -58,3 +58,4 @@ class UserServiceTest {
         assertThrows(BadRequestException.class, () -> userService.blockUser(1L, 1L));
     }
 }
+

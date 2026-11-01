@@ -49,3 +49,4 @@ public class BlockedUser extends BaseEntity {
         this.blocked = blocked;
     }
 }
+

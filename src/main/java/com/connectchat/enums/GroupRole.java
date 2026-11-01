@@ -8,3 +8,4 @@ public enum GroupRole {
     ADMIN,
     MEMBER
 }
+

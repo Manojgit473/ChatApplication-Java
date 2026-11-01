@@ -2,17 +2,21 @@ package com.connectchat.config;
 
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.SessionFactory;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * Syllabus Integration: Hibernate SessionFactory Bean Configuration.
  * 
- * Demonstrates:
- * - Unwrapping JPA 3.x EntityManagerFactory into native Hibernate 6.x SessionFactory.
- * - Bridges standard JPA persistence with syllabus requirements for Hibernate SessionFactory.
+ * Configured as an AutoConfiguration running strictly after HibernateJpaAutoConfiguration.
+ * This guarantees that Spring Boot's standard JPA EntityManagerFactory is created first,
+ * and the custom Hibernate SessionFactory is unwrapped and made available without triggering
+ * bean definition naming conflicts.
  */
-@Configuration
+@AutoConfiguration(after = HibernateJpaAutoConfiguration.class)
+@ConditionalOnBean(name = "entityManagerFactory")
 public class SessionFactoryConfig {
 
     @Bean

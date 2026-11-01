@@ -88,3 +88,4 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success("Blocked users list", blocked));
     }
 }
+

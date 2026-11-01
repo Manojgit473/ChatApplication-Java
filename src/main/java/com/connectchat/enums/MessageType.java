@@ -8,3 +8,4 @@ public enum MessageType {
     ATTACHMENT,
     SYSTEM
 }
+

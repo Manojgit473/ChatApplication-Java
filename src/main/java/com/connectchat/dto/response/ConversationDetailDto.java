@@ -122,3 +122,4 @@ public class ConversationDetailDto {
         this.directParticipant = directParticipant;
     }
 }
+

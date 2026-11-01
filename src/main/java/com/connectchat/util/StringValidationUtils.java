@@ -43,3 +43,4 @@ public final class StringValidationUtils {
                 .replace("'", "&#x27;");
     }
 }
+

@@ -33,3 +33,4 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
            ")")
     Optional<Conversation> findDirectConversationBetweenUsers(@Param("user1Id") Long user1Id, @Param("user2Id") Long user2Id);
 }
+

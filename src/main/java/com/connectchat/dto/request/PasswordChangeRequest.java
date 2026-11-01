@@ -39,3 +39,4 @@ public class PasswordChangeRequest {
         this.newPassword = newPassword;
     }
 }
+

@@ -68,3 +68,4 @@ public class SyllabusDemoResultDto {
         this.details = details;
     }
 }
+

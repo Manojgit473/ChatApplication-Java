@@ -51,3 +51,4 @@ public class UpdateGroupRequest {
         this.groupAvatarUrl = groupAvatarUrl;
     }
 }
+

@@ -152,3 +152,4 @@ public class UserServiceImpl implements UserService {
         return blockedUserRepository.isBlockedEitherWay(user1Id, user2Id);
     }
 }
+

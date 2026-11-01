@@ -191,3 +191,4 @@ public class Message extends BaseEntity {
         this.receipts = receipts;
     }
 }
+

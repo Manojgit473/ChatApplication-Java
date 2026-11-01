@@ -45,3 +45,4 @@ jobs:
         with:
           name: connect-chat-jar
           path: target/*.jar
+

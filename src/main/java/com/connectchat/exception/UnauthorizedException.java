@@ -13,3 +13,4 @@ public class UnauthorizedException extends AppException {
         super(message, HttpStatus.UNAUTHORIZED);
     }
 }
+

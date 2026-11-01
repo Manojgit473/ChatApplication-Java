@@ -17,3 +17,4 @@ public interface MessageReceiptRepository extends JpaRepository<MessageReceipt, 
 
     List<MessageReceipt> findByMessageId(Long messageId);
 }
+

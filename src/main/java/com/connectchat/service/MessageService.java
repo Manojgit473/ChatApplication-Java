@@ -28,3 +28,4 @@ public interface MessageService {
 
     String exportConversationAsText(Long conversationId, Long userId);
 }
+

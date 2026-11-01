@@ -143,3 +143,4 @@ public class Conversation extends BaseEntity {
         this.messages = messages;
     }
 }
+

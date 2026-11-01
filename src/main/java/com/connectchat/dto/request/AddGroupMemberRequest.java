@@ -25,3 +25,4 @@ public class AddGroupMemberRequest {
         this.userId = userId;
     }
 }
+

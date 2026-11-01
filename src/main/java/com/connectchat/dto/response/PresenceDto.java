@@ -55,3 +55,4 @@ public class PresenceDto {
         this.lastSeenAt = lastSeenAt;
     }
 }
+

@@ -75,3 +75,4 @@ public class UserSummaryDto {
         this.lastSeenAt = lastSeenAt;
     }
 }
+

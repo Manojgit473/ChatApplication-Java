@@ -56,3 +56,4 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
            "ORDER BY m.createdAt DESC")
     List<Message> findStarredMessagesByUser(@Param("userId") Long userId);
 }
+

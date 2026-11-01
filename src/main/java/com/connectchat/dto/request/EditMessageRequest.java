@@ -27,3 +27,4 @@ public class EditMessageRequest {
         this.content = content;
     }
 }
+

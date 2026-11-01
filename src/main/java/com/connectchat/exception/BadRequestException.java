@@ -13,3 +13,4 @@ public class BadRequestException extends AppException {
         super(message, HttpStatus.BAD_REQUEST);
     }
 }
+

@@ -38,3 +38,4 @@ public class CreateConversationRequest {
         this.initialMessage = initialMessage;
     }
 }
+

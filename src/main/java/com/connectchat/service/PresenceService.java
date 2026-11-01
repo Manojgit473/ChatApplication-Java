@@ -12,3 +12,4 @@ public interface PresenceService {
 
     PresenceDto getUserPresence(Long userId);
 }
+

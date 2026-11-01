@@ -65,3 +65,4 @@ public class ViewController {
         return auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken);
     }
 }
+

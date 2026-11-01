@@ -29,3 +29,4 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:" + uploadPath.toString() + "/");
     }
 }
+

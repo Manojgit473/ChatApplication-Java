@@ -47,3 +47,4 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("Current user profile retrieved", profile));
     }
 }
+

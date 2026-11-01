@@ -19,3 +19,4 @@ public interface AttachmentRepository extends JpaRepository<Attachment, Long> {
 
     List<Attachment> findByMessageConversationIdOrderByCreatedAtDesc(Long conversationId);
 }
+

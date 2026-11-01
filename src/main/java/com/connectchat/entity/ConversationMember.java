@@ -112,3 +112,4 @@ public class ConversationMember extends BaseEntity {
         this.lastReadMessageId = lastReadMessageId;
     }
 }
+

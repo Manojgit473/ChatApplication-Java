@@ -31,3 +31,4 @@ public interface ConversationMemberRepository extends JpaRepository<Conversation
 
     void deleteByConversationIdAndUserId(Long conversationId, Long userId);
 }
+

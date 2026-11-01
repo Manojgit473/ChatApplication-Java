@@ -73,3 +73,4 @@ public class RegisterRequest {
         this.displayName = displayName;
     }
 }
+

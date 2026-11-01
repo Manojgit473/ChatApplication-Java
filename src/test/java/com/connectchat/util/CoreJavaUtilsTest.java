@@ -83,3 +83,4 @@ class CoreJavaUtilsTest {
         assertNotNull(result.get("base64EncodedBytes"));
     }
 }
+

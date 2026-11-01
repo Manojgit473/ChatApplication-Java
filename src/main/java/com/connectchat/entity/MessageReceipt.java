@@ -73,3 +73,4 @@ public class MessageReceipt extends BaseEntity {
         this.readAt = readAt;
     }
 }
+

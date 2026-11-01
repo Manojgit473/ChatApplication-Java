@@ -50,3 +50,4 @@ public class PresenceServiceImpl implements PresenceService {
         return new PresenceDto(user.getId(), user.getUsername(), user.getOnlineStatus(), user.getLastSeenAt());
     }
 }
+

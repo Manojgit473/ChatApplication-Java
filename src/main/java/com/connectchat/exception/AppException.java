@@ -24,3 +24,4 @@ public class AppException extends RuntimeException {
         return status;
     }
 }
+

@@ -45,3 +45,4 @@ public class SyllabusDemoController {
         return ResponseEntity.ok(ApiResponse.success("Java Generics & Streams demo executed", result));
     }
 }
+

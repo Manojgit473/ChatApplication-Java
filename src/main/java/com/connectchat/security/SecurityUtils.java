@@ -31,3 +31,4 @@ public class SecurityUtils {
         return getCurrentUserDetails().getUsername();
     }
 }
+

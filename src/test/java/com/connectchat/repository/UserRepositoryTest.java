@@ -42,3 +42,4 @@ class UserRepositoryTest {
         assertEquals("clara", results.get(0).getUsername());
     }
 }
+

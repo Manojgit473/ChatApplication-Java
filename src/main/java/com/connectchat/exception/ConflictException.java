@@ -13,3 +13,4 @@ public class ConflictException extends AppException {
         super(message, HttpStatus.CONFLICT);
     }
 }
+

@@ -111,3 +111,4 @@ public class ConversationSummaryDto {
         this.memberCount = memberCount;
     }
 }
+

@@ -689,3 +689,4 @@ mvn test -Dtest=CoreJavaUtilsTest
 3. **Full-Featured Frontend**: Responsive HTML5/CSS3/JavaScript interface designed in soft teal (`#5AAFA5`), complete with real-time STOMP messaging, typing indicators, read receipts, and file attachments.
 4. **Syllabus Integration**: Explicit Hibernate `SessionFactory`, `Session`, and `Transaction` live demo alongside Core Java Reflection, Serialization, Generics, and Streams.
 5. **Comprehensive Documentation**: Complete setup instructions, test commands, REST API catalog, and viva examination notes.
+

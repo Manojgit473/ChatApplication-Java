@@ -16,3 +16,4 @@ public interface AttachmentService {
 
     Attachment getAttachmentEntity(String storedFileName);
 }
+

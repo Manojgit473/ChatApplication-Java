@@ -1,8 +1,11 @@
 package com.connectchat;
 
+import com.connectchat.config.SessionFactoryConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -14,6 +17,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * - Spring AOP cross-cutting concerns via @EnableAspectJAutoProxy.
  */
 @SpringBootApplication
+@ComponentScan(
+    basePackages = "com.connectchat",
+    excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SessionFactoryConfig.class)
+)
 @EnableTransactionManagement
 @EnableAspectJAutoProxy
 public class ConnectChatApplication {

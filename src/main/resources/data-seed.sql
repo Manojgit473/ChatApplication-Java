@@ -46,3 +46,4 @@ VALUES
 (3, DATE_SUB(NOW(6), INTERVAL 15 MINUTE), DATE_SUB(NOW(6), INTERVAL 15 MINUTE), 2, 1, 'Team, our Spring Boot + Hibernate real-time chat application architecture is ready for demonstration.', 'TEXT', 'DELIVERED'),
 (4, DATE_SUB(NOW(6), INTERVAL 10 MINUTE), DATE_SUB(NOW(6), INTERVAL 10 MINUTE), 2, 2, 'Awesome! I verified the WebSocket STOMP real-time pub-sub channels and presence indicators.', 'TEXT', 'DELIVERED')
 ON DUPLICATE KEY UPDATE updated_at = NOW(6);
+

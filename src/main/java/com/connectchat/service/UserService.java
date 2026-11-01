@@ -30,3 +30,4 @@ public interface UserService {
 
     boolean isBlockedEitherWay(Long user1Id, Long user2Id);
 }
+

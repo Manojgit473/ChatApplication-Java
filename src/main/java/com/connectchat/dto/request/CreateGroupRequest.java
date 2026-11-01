@@ -53,3 +53,4 @@ public class CreateGroupRequest {
         this.memberIds = memberIds;
     }
 }
+

@@ -120,3 +120,4 @@ A modular monolith is the recommended starting architecture for college projects
 | `@Valid` | Controller methods | Instructs Spring to validate incoming request DTOs against Jakarta Bean Validation constraints. |
 | `@MessageMapping` | WebSocket Controller | Routes STOMP message frames sent to `/app/*` destinations to Java handler methods. |
 | `@Aspect` & `@Around` | AOP Aspects | Defines a cross-cutting module and wraps around method invocation to measure performance. |
+

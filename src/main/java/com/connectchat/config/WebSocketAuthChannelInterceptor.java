@@ -78,3 +78,4 @@ public class WebSocketAuthChannelInterceptor implements ChannelInterceptor {
         return null;
     }
 }
+

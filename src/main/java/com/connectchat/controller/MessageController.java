@@ -63,3 +63,4 @@ public class MessageController {
         return ResponseEntity.ok(ApiResponse.success("Search results", results));
     }
 }
+

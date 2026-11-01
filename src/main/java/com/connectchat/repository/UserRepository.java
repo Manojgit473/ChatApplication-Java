@@ -36,3 +36,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.id != :currentUserId AND u.enabled = true ORDER BY u.displayName ASC")
     List<User> findAllExceptCurrent(@Param("currentUserId") Long currentUserId);
 }
+

@@ -60,3 +60,4 @@ public class SendMessageRequest {
         this.idempotencyKey = idempotencyKey;
     }
 }
+

@@ -29,3 +29,4 @@ public interface BlockedUserRepository extends JpaRepository<BlockedUser, Long> 
 
     void deleteByBlockerIdAndBlockedId(Long blockerId, Long blockedId);
 }
+
