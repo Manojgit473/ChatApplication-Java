@@ -8,9 +8,12 @@ import jakarta.validation.constraints.Size;
  */
 public class ProfileUpdateRequest {
 
-    @NotBlank(message = "Display name cannot be blank")
-    @Size(min = 2, max = 50, message = "Display name must be between 2 and 50 characters")
+    @NotBlank(message = "Name cannot be blank")
+    @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
     private String displayName;
+
+    @Size(max = 20, message = "Mobile number cannot exceed 20 characters")
+    private String phoneNumber;
 
     @Size(max = 255, message = "Bio cannot exceed 255 characters")
     private String bio;
@@ -27,12 +30,43 @@ public class ProfileUpdateRequest {
         this.avatarUrl = avatarUrl;
     }
 
+    public ProfileUpdateRequest(String displayName, String phoneNumber, String bio, String avatarUrl) {
+        this.displayName = displayName;
+        this.phoneNumber = phoneNumber;
+        this.bio = bio;
+        this.avatarUrl = avatarUrl;
+    }
+
     public String getDisplayName() {
         return displayName;
     }
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getName() {
+        return displayName;
+    }
+
+    public void setName(String name) {
+        this.displayName = name;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getMobileNumber() {
+        return phoneNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.phoneNumber = mobileNumber;
     }
 
     public String getBio() {
@@ -51,4 +85,3 @@ public class ProfileUpdateRequest {
         this.avatarUrl = avatarUrl;
     }
 }
-

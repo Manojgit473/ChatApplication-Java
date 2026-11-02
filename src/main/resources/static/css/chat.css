@@ -573,36 +573,63 @@
     color: var(--text-muted);
 }
 
+.message-receipt-icon {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 4px;
+    vertical-align: middle;
+}
+
 .message-receipt-icon svg {
-    width: 14px;
-    height: 14px;
+    width: 15px;
+    height: 15px;
+    transition: all var(--transition-fast);
+}
+
+.message-receipt-icon.sent svg {
+    stroke: rgba(255, 255, 255, 0.7);
+}
+
+.message-receipt-icon.delivered svg {
+    stroke: rgba(255, 255, 255, 0.9);
+}
+
+.message-receipt-icon.read svg {
+    stroke: #5ce1e6 !important;
+    filter: drop-shadow(0 0 2px rgba(92, 225, 230, 0.6));
+}
+
+.received .message-receipt-icon.read svg {
+    stroke: var(--dark-teal) !important;
 }
 
 .message-attachment-card {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 10px;
+    padding: 8px 12px;
     background: rgba(0, 0, 0, 0.04);
     border-radius: var(--radius-sm);
     margin-top: 6px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    transition: background var(--transition-fast);
 }
 
 .sent .message-attachment-card {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.25);
     color: #fff;
 }
 
 .attachment-icon {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: var(--radius-sm);
     background: rgba(0, 0, 0, 0.08);
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .sent .attachment-icon {
@@ -615,7 +642,7 @@
 }
 
 .attachment-name {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
@@ -623,24 +650,87 @@
 }
 
 .attachment-size {
-    font-size: 10px;
-    opacity: 0.8;
+    font-size: 11px;
+    opacity: 0.85;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
+
+.attachment-badge {
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+.attachment-badge.pdf { background: #fee2e2; color: #dc2626; }
+.attachment-badge.doc, .attachment-badge.docx { background: #dbeafe; color: #2563eb; }
+.attachment-badge.xls, .attachment-badge.xlsx { background: #dcfce7; color: #16a34a; }
+.attachment-badge.ppt, .attachment-badge.pptx { background: #ffedd5; color: #ea580c; }
+.attachment-badge.zip, .attachment-badge.rar, .attachment-badge.sevenz { background: #fef3c7; color: #d97706; }
+.attachment-badge.code { background: #f3e8ff; color: #9333ea; }
+.attachment-badge.media { background: #e0e7ff; color: #4f46e5; }
+.attachment-badge.other { background: #e0f2fe; color: #0284c7; }
 
 .attachment-download-btn {
     color: inherit;
     display: flex;
     align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    background: rgba(0, 0, 0, 0.05);
+    transition: background var(--transition-fast);
+}
+
+.attachment-download-btn:hover {
+    background: rgba(0, 0, 0, 0.12);
+}
+
+.sent .attachment-download-btn {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.sent .attachment-download-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
 }
 
 .attachment-image-preview {
-    max-width: 280px;
-    max-height: 220px;
+    max-width: 320px;
+    max-height: 260px;
     border-radius: var(--radius-sm);
     margin-top: 6px;
     cursor: pointer;
     object-fit: cover;
     display: block;
+    box-shadow: var(--shadow-subtle);
+}
+
+.attachment-video-preview {
+    max-width: 340px;
+    width: 100%;
+    max-height: 260px;
+    border-radius: var(--radius-sm);
+    margin-top: 6px;
+    background: #000;
+    display: block;
+    outline: none;
+    box-shadow: var(--shadow-subtle);
+}
+
+.attachment-audio-preview {
+    max-width: 300px;
+    width: 100%;
+    height: 38px;
+    margin-top: 6px;
+    display: block;
+    outline: none;
 }
 
 /* Hover Menu for Message Actions */
@@ -897,6 +987,60 @@
     color: var(--dark-teal);
 }
 
+.group-member-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.group-member-option:hover {
+    background: var(--bg-surface-secondary);
+}
+
+.group-member-option input[type="checkbox"] {
+    accent-color: var(--primary-teal);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.add-member-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    transition: background var(--transition-fast);
+}
+
+.add-member-item:hover {
+    background: var(--bg-surface-secondary);
+}
+
+.remove-member-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remove-member-btn:hover {
+    color: var(--status-danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
 /* --------------------------------------------------------
    5. Modals & Dialogs
    -------------------------------------------------------- */
@@ -999,42 +1143,6 @@
     color: #fff;
     cursor: pointer;
     font-weight: 500;
-}
-
-/* Syllabus Demo Tabs */
-.demo-tabs {
-    display: flex;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 16px;
-}
-
-.demo-tab-btn {
-    padding: 8px 14px;
-    border: none;
-    background: transparent;
-    color: var(--text-secondary);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-}
-
-.demo-tab-btn.active {
-    color: var(--dark-teal);
-    border-bottom-color: var(--primary-teal);
-    font-weight: 600;
-}
-
-.demo-output-pre {
-    background: #1E2926;
-    color: #A3E6D8;
-    padding: 14px;
-    border-radius: var(--radius-sm);
-    font-family: monospace;
-    font-size: 12px;
-    max-height: 260px;
-    overflow-y: auto;
-    white-space: pre-wrap;
 }
 
 /* Toast Notifications */

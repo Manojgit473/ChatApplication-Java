@@ -28,35 +28,31 @@ public class ViewController {
 
     @GetMapping("/")
     public String index() {
-        if (isAuthenticated()) {
-            return "redirect:/chat";
-        }
-        return "redirect:/login";
+        return "redirect:/chat";
     }
 
     @GetMapping("/login")
     public String loginPage() {
-        if (isAuthenticated()) {
-            return "redirect:/chat";
-        }
         return "login";
     }
 
     @GetMapping("/register")
     public String registerPage() {
-        if (isAuthenticated()) {
-            return "redirect:/chat";
-        }
         return "register";
     }
 
     @GetMapping("/chat")
     public String chatPage(Model model) {
-        if (!isAuthenticated()) {
-            return "redirect:/login";
+        if (isAuthenticated()) {
+            try {
+                UserProfileDto profile = authService.getCurrentUserProfile();
+                model.addAttribute("currentUser", profile);
+            } catch (Exception e) {
+                model.addAttribute("currentUser", null);
+            }
+        } else {
+            model.addAttribute("currentUser", null);
         }
-        UserProfileDto profile = authService.getCurrentUserProfile();
-        model.addAttribute("currentUser", profile);
         return "chat";
     }
 

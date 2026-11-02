@@ -1,8 +1,8 @@
 package com.connectchat.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -17,8 +17,7 @@ public class CreateGroupRequest {
     @Size(max = 255, message = "Group description cannot exceed 255 characters")
     private String description;
 
-    @NotEmpty(message = "At least one member must be selected")
-    private Set<Long> memberIds;
+    private Set<Long> memberIds = new HashSet<>();
 
     public CreateGroupRequest() {
     }
@@ -26,7 +25,7 @@ public class CreateGroupRequest {
     public CreateGroupRequest(String title, String description, Set<Long> memberIds) {
         this.title = title;
         this.description = description;
-        this.memberIds = memberIds;
+        this.memberIds = memberIds != null ? memberIds : new HashSet<>();
     }
 
     public String getTitle() {

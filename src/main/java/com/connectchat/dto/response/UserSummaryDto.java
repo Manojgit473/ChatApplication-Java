@@ -4,13 +4,15 @@ import com.connectchat.enums.OnlineStatus;
 import java.time.Instant;
 
 /**
- * Lightweight User DTO for lists, sender previews, and avatars.
+ * Lightweight User DTO for lists, sender previews, and contact details.
  */
 public class UserSummaryDto {
 
     private Long id;
     private String username;
     private String displayName;
+    private String email;
+    private String phoneNumber;
     private String avatarUrl;
     private OnlineStatus onlineStatus;
     private Instant lastSeenAt;
@@ -22,6 +24,17 @@ public class UserSummaryDto {
         this.id = id;
         this.username = username;
         this.displayName = displayName;
+        this.avatarUrl = avatarUrl;
+        this.onlineStatus = onlineStatus;
+        this.lastSeenAt = lastSeenAt;
+    }
+
+    public UserSummaryDto(Long id, String username, String displayName, String email, String phoneNumber, String avatarUrl, OnlineStatus onlineStatus, Instant lastSeenAt) {
+        this.id = id;
+        this.username = username;
+        this.displayName = displayName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
         this.avatarUrl = avatarUrl;
         this.onlineStatus = onlineStatus;
         this.lastSeenAt = lastSeenAt;
@@ -51,6 +64,30 @@ public class UserSummaryDto {
         this.displayName = displayName;
     }
 
+    public String getName() {
+        return displayName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getMobileNumber() {
+        return phoneNumber;
+    }
+
     public String getAvatarUrl() {
         return avatarUrl;
     }
@@ -75,4 +112,3 @@ public class UserSummaryDto {
         this.lastSeenAt = lastSeenAt;
     }
 }
-

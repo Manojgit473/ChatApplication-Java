@@ -11,12 +11,14 @@ public class UserProfileDto {
     private Long id;
     private String username;
     private String email;
+    private String phoneNumber;
     private String displayName;
     private String avatarUrl;
     private String bio;
     private OnlineStatus onlineStatus;
     private Instant lastSeenAt;
     private Instant createdAt;
+    private String token;
 
     public UserProfileDto() {
     }
@@ -25,6 +27,19 @@ public class UserProfileDto {
         this.id = id;
         this.username = username;
         this.email = email;
+        this.displayName = displayName;
+        this.avatarUrl = avatarUrl;
+        this.bio = bio;
+        this.onlineStatus = onlineStatus;
+        this.lastSeenAt = lastSeenAt;
+        this.createdAt = createdAt;
+    }
+
+    public UserProfileDto(Long id, String username, String email, String phoneNumber, String displayName, String avatarUrl, String bio, OnlineStatus onlineStatus, Instant lastSeenAt, Instant createdAt) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
         this.displayName = displayName;
         this.avatarUrl = avatarUrl;
         this.bio = bio;
@@ -57,12 +72,28 @@ public class UserProfileDto {
         this.email = email;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getMobileNumber() {
+        return phoneNumber;
+    }
+
     public String getDisplayName() {
         return displayName;
     }
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getName() {
+        return displayName;
     }
 
     public String getAvatarUrl() {
@@ -104,5 +135,12 @@ public class UserProfileDto {
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
-}
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+}

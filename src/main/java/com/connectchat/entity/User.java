@@ -30,6 +30,9 @@ public class User extends BaseEntity {
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
     @Column(name = "password", nullable = false, length = 255)
     private String password;
 
@@ -65,6 +68,14 @@ public class User extends BaseEntity {
         this.displayName = displayName;
     }
 
+    public User(String username, String email, String phoneNumber, String password, String displayName) {
+        this.username = username;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+        this.displayName = displayName;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -79,6 +90,14 @@ public class User extends BaseEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getPassword() {

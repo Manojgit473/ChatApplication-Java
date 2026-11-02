@@ -40,7 +40,16 @@ import java.util.UUID;
 public class AttachmentServiceImpl implements AttachmentService {
 
     private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList(
-            "jpg", "jpeg", "png", "gif", "webp", "pdf", "txt", "doc", "docx", "zip"
+            // Images
+            "jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico", "tif", "tiff",
+            // Videos
+            "mp4", "webm", "mkv", "mov", "avi", "3gp", "flv", "wmv", "m4v",
+            // Audio
+            "mp3", "wav", "ogg", "m4a", "aac", "flac",
+            // Documents & Office
+            "pdf", "doc", "docx", "xls", "xlsx", "csv", "ppt", "pptx", "txt", "rtf", "odt", "ods", "odp",
+            // Archives & Code
+            "zip", "rar", "7z", "tar", "gz", "json", "xml", "html", "md"
     );
 
     @Value("${connectchat.upload.dir:uploads/attachments}")

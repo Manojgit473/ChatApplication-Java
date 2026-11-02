@@ -14,6 +14,8 @@ public interface AuthService {
 
     UserProfileDto login(LoginRequest request, HttpServletRequest httpRequest);
 
+    void logout(HttpServletRequest httpRequest);
+
     UserProfileDto getCurrentUserProfile();
 }
 

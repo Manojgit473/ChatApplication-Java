@@ -5,12 +5,12 @@
 -- ========================================================
 
 -- Seed Sample Users
-INSERT INTO users (id, created_at, updated_at, username, email, password, display_name, avatar_url, bio, online_status, enabled)
+INSERT INTO users (id, created_at, updated_at, username, email, phone_number, password, display_name, avatar_url, bio, online_status, enabled)
 VALUES 
-(1, NOW(6), NOW(6), 'alex', 'alex@example.com', '$2a$10$595r2E0Q4M2UfE5qP10gceFv8zT/c181h7J6KzL4yLwVlB1pC98eG', 'Alex Morgan', NULL, 'Full Stack Engineer & Open Source enthusiast', 'ONLINE', TRUE),
-(2, NOW(6), NOW(6), 'samira', 'samira@example.com', '$2a$10$595r2E0Q4M2UfE5qP10gceFv8zT/c181h7J6KzL4yLwVlB1pC98eG', 'Samira Khan', NULL, 'UI/UX Designer | Clean interfaces & soft palettes', 'AWAY', TRUE),
-(3, NOW(6), NOW(6), 'jordan', 'jordan@example.com', '$2a$10$595r2E0Q4M2UfE5qP10gceFv8zT/c181h7J6KzL4yLwVlB1pC98eG', 'Jordan Lee', NULL, 'Backend Developer & Distributed Systems researcher', 'OFFLINE', TRUE),
-(4, NOW(6), NOW(6), 'elena', 'elena@example.com', '$2a$10$595r2E0Q4M2UfE5qP10gceFv8zT/c181h7J6KzL4yLwVlB1pC98eG', 'Elena Rostova', NULL, 'DevOps & Cloud architecture apprentice', 'OFFLINE', TRUE)
+(1, NOW(6), NOW(6), 'alex', 'alex@example.com', '+91 9876543210', '$2a$10$595r2E0Q4M2UfE5qP10gceFv8zT/c181h7J6KzL4yLwVlB1pC98eG', 'Alex Morgan', NULL, 'Full Stack Engineer & Open Source enthusiast', 'ONLINE', TRUE),
+(2, NOW(6), NOW(6), 'samira', 'samira@example.com', '+91 9876543211', '$2a$10$595r2E0Q4M2UfE5qP10gceFv8zT/c181h7J6KzL4yLwVlB1pC98eG', 'Samira Khan', NULL, 'UI/UX Designer | Clean interfaces & soft palettes', 'AWAY', TRUE),
+(3, NOW(6), NOW(6), 'jordan', 'jordan@example.com', '+91 9876543212', '$2a$10$595r2E0Q4M2UfE5qP10gceFv8zT/c181h7J6KzL4yLwVlB1pC98eG', 'Jordan Lee', NULL, 'Backend Developer & Distributed Systems researcher', 'OFFLINE', TRUE),
+(4, NOW(6), NOW(6), 'elena', 'elena@example.com', '+91 9876543213', '$2a$10$595r2E0Q4M2UfE5qP10gceFv8zT/c181h7J6KzL4yLwVlB1pC98eG', 'Elena Rostova', NULL, 'DevOps & Cloud architecture apprentice', 'OFFLINE', TRUE)
 ON DUPLICATE KEY UPDATE updated_at = NOW(6);
 
 -- Seed Sample Direct Conversation between Alex and Samira

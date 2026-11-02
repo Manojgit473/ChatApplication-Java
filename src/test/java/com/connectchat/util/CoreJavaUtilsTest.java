@@ -45,6 +45,20 @@ class CoreJavaUtilsTest {
 
         assertTrue(StringValidationUtils.isValidEmail("alex@example.com"));
         assertFalse(StringValidationUtils.isValidEmail("invalid-email-address"));
+
+        // Indian mobile number validation
+        assertTrue(StringValidationUtils.isValidIndianPhoneNumber("9876543210"));
+        assertTrue(StringValidationUtils.isValidIndianPhoneNumber("+91 9876543210"));
+        assertFalse(StringValidationUtils.isValidIndianPhoneNumber("1234567890")); // starts with 1
+        assertFalse(StringValidationUtils.isValidIndianPhoneNumber("98765")); // too short
+
+        // Strong password validation
+        assertTrue(StringValidationUtils.isStrongPassword("Secret@123"));
+        assertFalse(StringValidationUtils.isStrongPassword("weak")); // too short
+        assertFalse(StringValidationUtils.isStrongPassword("alllowercase123!")); // missing uppercase
+        assertFalse(StringValidationUtils.isStrongPassword("ALLUPPERCASE123!")); // missing lowercase
+        assertFalse(StringValidationUtils.isStrongPassword("NoSpecial123")); // missing symbol
+        assertFalse(StringValidationUtils.isStrongPassword("NoDigits!@#")); // missing digit
     }
 
     @Test

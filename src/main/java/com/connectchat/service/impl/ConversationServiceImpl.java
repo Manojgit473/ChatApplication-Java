@@ -12,6 +12,7 @@ import com.connectchat.entity.Message;
 import com.connectchat.entity.User;
 import com.connectchat.enums.ConversationType;
 import com.connectchat.enums.GroupRole;
+import com.connectchat.enums.MessageStatus;
 import com.connectchat.enums.MessageType;
 import com.connectchat.exception.BadRequestException;
 import com.connectchat.exception.ForbiddenException;
@@ -184,6 +185,9 @@ public class ConversationServiceImpl implements ConversationService {
         ConversationMember member = conversationMemberRepository.findByConversationIdAndUserId(conversationId, userId)
                 .orElseThrow(() -> new ForbiddenException("You are not a member of this conversation"));
 
+        // Update database message status to READ
+        messageRepository.updateStatusForConversation(conversationId, userId, MessageStatus.READ);
+
         Optional<Message> latestMsg = messageRepository.findFirstByConversationIdOrderByCreatedAtDesc(conversationId);
         if (latestMsg.isPresent()) {
             Long latestId = latestMsg.get().getId();
@@ -193,6 +197,15 @@ public class ConversationServiceImpl implements ConversationService {
             // Broadcast read receipt via STOMP
             ReadReceiptDto receipt = new ReadReceiptDto(conversationId, latestId, userId, Instant.now());
             messagingTemplate.convertAndSend("/topic/conversations/" + conversationId + "/read", receipt);
+
+            Conversation conversation = conversationRepository.findById(conversationId).orElse(null);
+            if (conversation != null && conversation.getMembers() != null) {
+                for (ConversationMember m : conversation.getMembers()) {
+                    if (!m.getUser().getId().equals(userId)) {
+                        messagingTemplate.convertAndSend("/topic/users/" + m.getUser().getId() + "/read", receipt);
+                    }
+                }
+            }
         }
     }
 }

@@ -5,9 +5,11 @@
 
 const Api = (() => {
     async function request(endpoint, options = {}) {
+        const token = sessionStorage.getItem('cc_auth_token');
         const config = {
             headers: {
                 'Accept': 'application/json',
+                ...(token ? { 'Authorization': 'Bearer ' + token, 'X-Auth-Token': token } : {}),
                 ...options.headers
             },
             ...options
@@ -22,6 +24,8 @@ const Api = (() => {
             const response = await fetch(endpoint, config);
 
             if (response.status === 401) {
+                sessionStorage.removeItem('cc_auth_token');
+                sessionStorage.removeItem('cc_user');
                 // If unauthorized and not on auth pages, redirect to login
                 if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
                     window.location.href = '/login';
@@ -57,7 +61,14 @@ const Api = (() => {
         auth: {
             register: (body) => request('/api/auth/register', { method: 'POST', body: JSON.stringify(body) }),
             login: (body) => request('/api/auth/login', { method: 'POST', body: JSON.stringify(body) }),
-            logout: () => request('/api/auth/logout', { method: 'POST' }),
+            logout: async () => {
+                try {
+                    await request('/api/auth/logout', { method: 'POST' });
+                } finally {
+                    sessionStorage.removeItem('cc_auth_token');
+                    sessionStorage.removeItem('cc_user');
+                }
+            },
             getMe: () => request('/api/auth/me')
         },
         users: {

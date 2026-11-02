@@ -3,6 +3,9 @@ package com.connectchat.dto.request;
 import com.connectchat.enums.MessageType;
 import jakarta.validation.constraints.Size;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * DTO for sending messages over REST or WebSocket STOMP.
  */
@@ -14,6 +17,8 @@ public class SendMessageRequest {
     private MessageType type = MessageType.TEXT;
 
     private Long replyToId;
+
+    private List<Long> attachmentIds = new ArrayList<>();
 
     @Size(max = 64, message = "Idempotency key cannot exceed 64 characters")
     private String idempotencyKey;
@@ -50,6 +55,14 @@ public class SendMessageRequest {
 
     public void setReplyToId(Long replyToId) {
         this.replyToId = replyToId;
+    }
+
+    public List<Long> getAttachmentIds() {
+        return attachmentIds;
+    }
+
+    public void setAttachmentIds(List<Long> attachmentIds) {
+        this.attachmentIds = attachmentIds;
     }
 
     public String getIdempotencyKey() {

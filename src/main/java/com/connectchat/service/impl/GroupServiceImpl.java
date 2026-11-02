@@ -3,6 +3,7 @@ package com.connectchat.service.impl;
 import com.connectchat.dto.request.CreateGroupRequest;
 import com.connectchat.dto.request.UpdateGroupRequest;
 import com.connectchat.dto.response.ConversationDetailDto;
+import com.connectchat.dto.response.MessageDto;
 import com.connectchat.entity.Conversation;
 import com.connectchat.entity.ConversationMember;
 import com.connectchat.entity.Message;
@@ -14,6 +15,7 @@ import com.connectchat.exception.BadRequestException;
 import com.connectchat.exception.ForbiddenException;
 import com.connectchat.exception.ResourceNotFoundException;
 import com.connectchat.mapper.ConversationMapper;
+import com.connectchat.mapper.MessageMapper;
 import com.connectchat.repository.ConversationMemberRepository;
 import com.connectchat.repository.ConversationRepository;
 import com.connectchat.repository.MessageRepository;
@@ -42,6 +44,7 @@ public class GroupServiceImpl implements GroupService {
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
     private final ConversationMapper conversationMapper;
+    private final MessageMapper messageMapper;
     private final SimpMessagingTemplate messagingTemplate;
 
     public GroupServiceImpl(ConversationRepository conversationRepository,
@@ -49,12 +52,14 @@ public class GroupServiceImpl implements GroupService {
                             UserRepository userRepository,
                             MessageRepository messageRepository,
                             ConversationMapper conversationMapper,
+                            MessageMapper messageMapper,
                             @Lazy SimpMessagingTemplate messagingTemplate) {
         this.conversationRepository = conversationRepository;
         this.conversationMemberRepository = conversationMemberRepository;
         this.userRepository = userRepository;
         this.messageRepository = messageRepository;
         this.conversationMapper = conversationMapper;
+        this.messageMapper = messageMapper;
         this.messagingTemplate = messagingTemplate;
     }
 
@@ -81,7 +86,7 @@ public class GroupServiceImpl implements GroupService {
         // Add initial members
         if (request.getMemberIds() != null) {
             for (Long memberId : request.getMemberIds()) {
-                if (!memberId.equals(creatorId)) {
+                if (memberId != null && !memberId.equals(creatorId)) {
                     userRepository.findById(memberId).ifPresent(user -> {
                         ConversationMember m = new ConversationMember(savedGroup, user, GroupRole.MEMBER);
                         conversationMemberRepository.save(m);
@@ -93,7 +98,19 @@ public class GroupServiceImpl implements GroupService {
 
         // Create initial system message
         Message sysMsg = new Message(savedGroup, creator, creator.getDisplayName() + " created group \"" + group.getTitle() + "\"", MessageType.SYSTEM);
-        messageRepository.save(sysMsg);
+        Message savedSysMsg = messageRepository.save(sysMsg);
+        savedGroup.setLastMessageAt(savedSysMsg.getCreatedAt());
+        conversationRepository.save(savedGroup);
+
+        MessageDto sysMsgDto = messageMapper.toDto(savedSysMsg, creatorId);
+
+        // Broadcast to all group members so the group instantly appears in their sidebar
+        if (savedGroup.getMembers() != null) {
+            for (ConversationMember m : savedGroup.getMembers()) {
+                messagingTemplate.convertAndSend("/topic/users/" + m.getUser().getId() + "/messages", sysMsgDto);
+            }
+        }
+        messagingTemplate.convertAndSend("/topic/conversations/" + savedGroup.getId(), sysMsgDto);
 
         return conversationMapper.toDetailDto(savedGroup, creatorId, ownerMember);
     }
@@ -156,7 +173,17 @@ public class GroupServiceImpl implements GroupService {
 
         // System message
         Message sysMsg = new Message(group, requesterMember.getUser(), newUser.getDisplayName() + " was added to the group", MessageType.SYSTEM);
-        messageRepository.save(sysMsg);
+        Message savedSysMsg = messageRepository.save(sysMsg);
+        group.setLastMessageAt(savedSysMsg.getCreatedAt());
+        conversationRepository.save(group);
+
+        MessageDto sysMsgDto = messageMapper.toDto(savedSysMsg, requesterId);
+        messagingTemplate.convertAndSend("/topic/conversations/" + groupId, sysMsgDto);
+        messagingTemplate.convertAndSend("/topic/users/" + newUserId + "/messages", sysMsgDto);
+        List<ConversationMember> allMembers = conversationMemberRepository.findByConversationId(groupId);
+        for (ConversationMember m : allMembers) {
+            messagingTemplate.convertAndSend("/topic/users/" + m.getUser().getId() + "/messages", sysMsgDto);
+        }
     }
 
     @Override
@@ -182,7 +209,17 @@ public class GroupServiceImpl implements GroupService {
         conversationMemberRepository.delete(target);
 
         Message sysMsg = new Message(group, requester.getUser(), target.getUser().getDisplayName() + " was removed from the group", MessageType.SYSTEM);
-        messageRepository.save(sysMsg);
+        Message savedSysMsg = messageRepository.save(sysMsg);
+        group.setLastMessageAt(savedSysMsg.getCreatedAt());
+        conversationRepository.save(group);
+
+        MessageDto sysMsgDto = messageMapper.toDto(savedSysMsg, requesterId);
+        messagingTemplate.convertAndSend("/topic/conversations/" + groupId, sysMsgDto);
+        messagingTemplate.convertAndSend("/topic/users/" + memberUserId + "/messages", sysMsgDto);
+        List<ConversationMember> remaining = conversationMemberRepository.findByConversationId(groupId);
+        for (ConversationMember m : remaining) {
+            messagingTemplate.convertAndSend("/topic/users/" + m.getUser().getId() + "/messages", sysMsgDto);
+        }
     }
 
     @Override
@@ -214,7 +251,16 @@ public class GroupServiceImpl implements GroupService {
             conversationRepository.delete(group);
         } else {
             Message sysMsg = new Message(group, member.getUser(), member.getUser().getDisplayName() + " left the group", MessageType.SYSTEM);
-            messageRepository.save(sysMsg);
+            Message savedSysMsg = messageRepository.save(sysMsg);
+            group.setLastMessageAt(savedSysMsg.getCreatedAt());
+            conversationRepository.save(group);
+
+            MessageDto sysMsgDto = messageMapper.toDto(savedSysMsg, userId);
+            messagingTemplate.convertAndSend("/topic/conversations/" + groupId, sysMsgDto);
+            List<ConversationMember> remaining = conversationMemberRepository.findByConversationId(groupId);
+            for (ConversationMember m : remaining) {
+                messagingTemplate.convertAndSend("/topic/users/" + m.getUser().getId() + "/messages", sysMsgDto);
+            }
         }
     }
 

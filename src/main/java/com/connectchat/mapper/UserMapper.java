@@ -19,6 +19,8 @@ public class UserMapper {
                 user.getId(),
                 user.getUsername(),
                 user.getDisplayName(),
+                user.getEmail(),
+                user.getPhoneNumber(),
                 user.getAvatarUrl(),
                 user.getOnlineStatus(),
                 user.getLastSeenAt()
@@ -33,6 +35,7 @@ public class UserMapper {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
+                user.getPhoneNumber(),
                 user.getDisplayName(),
                 user.getAvatarUrl(),
                 user.getBio(),
@@ -42,4 +45,3 @@ public class UserMapper {
         );
     }
 }
-

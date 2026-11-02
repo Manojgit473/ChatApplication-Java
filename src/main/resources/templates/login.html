@@ -22,25 +22,19 @@
 
             <div id="alertBox" class="alert-box alert-danger hidden"></div>
 
-            <form id="loginForm">
+            <form id="loginForm" autocomplete="off">
                 <div class="form-group">
-                    <label class="form-label" for="usernameOrEmail">Username or Email</label>
-                    <input type="text" id="usernameOrEmail" class="form-input" placeholder="e.g. alex or alex@example.com" required autocomplete="username">
+                    <label class="form-label" for="usernameOrEmail">Mobile Number or Email</label>
+                    <input type="text" id="usernameOrEmail" class="form-input" placeholder="Enter mobile number or email" required autocomplete="off" autofocus>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="password">Password</label>
-                    <input type="password" id="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+                    <input type="password" id="password" class="form-input" placeholder="Enter your password" required autocomplete="new-password">
                 </div>
 
                 <button type="submit" class="btn-primary">Sign In</button>
             </form>
-
-            <div class="demo-credentials-box">
-                <strong>Viva Demo Pre-Seeded Accounts:</strong>
-                Username: <code>alex</code> | Password: <code>Password@123</code><br>
-                Username: <code>samira</code> | Password: <code>Password@123</code>
-            </div>
 
             <div class="auth-footer">
                 Don't have an account yet? <a th:href="@{/register}" href="/register">Create one</a>
@@ -52,4 +46,3 @@
     <script th:src="@{/js/auth.js}" src="/js/auth.js"></script>
 </body>
 </html>
-

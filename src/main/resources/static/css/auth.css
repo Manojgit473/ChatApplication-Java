@@ -162,19 +162,156 @@
     display: none !important;
 }
 
-.demo-credentials-box {
-    margin-top: 20px;
-    padding: 12px;
-    background: var(--teal-tint-subtle);
-    border: 1px dashed var(--teal-border-light);
-    border-radius: var(--radius-sm);
-    font-size: 12px;
-    color: var(--darker-teal);
+/* Validation Feedback & Input States */
+.validation-hint {
+    font-size: 11px;
+    margin-top: 4px;
+    display: block;
+    color: var(--text-muted);
+    transition: color var(--transition-fast);
 }
 
-.demo-credentials-box strong {
-    display: block;
-    margin-bottom: 4px;
+.validation-hint.valid {
+    color: #10B981;
+}
+
+.validation-hint.invalid {
+    color: #EF4444;
+}
+
+.form-input.is-valid {
+    border-color: #10B981;
+}
+
+.form-input.is-invalid {
+    border-color: #EF4444;
+}
+
+/* Password Toggle & Strength Indicator */
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrapper .form-input {
+    padding-right: 40px;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-fast);
+}
+
+.password-toggle-btn:hover {
     color: var(--dark-teal);
 }
+
+.password-strength-container {
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: var(--bg-surface-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+}
+
+.strength-meter-bar {
+    height: 4px;
+    width: 100%;
+    background: var(--border-color);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.strength-meter-fill {
+    height: 100%;
+    width: 0%;
+    transition: width 0.25s ease, background-color 0.25s ease;
+}
+
+.strength-meter-fill.weak {
+    background-color: #EF4444;
+}
+
+.strength-meter-fill.medium {
+    background-color: #F59E0B;
+}
+
+.strength-meter-fill.strong {
+    background-color: #10B981;
+}
+
+.strength-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text-secondary);
+}
+
+.strength-status-text {
+    font-weight: 700;
+}
+
+.strength-status-text.weak {
+    color: #EF4444;
+}
+
+.strength-status-text.medium {
+    color: #F59E0B;
+}
+
+.strength-status-text.strong {
+    color: #10B981;
+}
+
+.strength-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.strength-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.15s ease;
+}
+
+.strength-item .rule-icon {
+    font-size: 11px;
+    line-height: 1;
+}
+
+.strength-item.passed {
+    color: #10B981;
+    font-weight: 500;
+}
+
+.strength-item.passed .rule-icon {
+    color: #10B981;
+}
+
+.strength-item.unmet {
+    color: var(--text-muted);
+}
+
 

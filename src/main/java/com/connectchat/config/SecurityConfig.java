@@ -2,6 +2,7 @@ package com.connectchat.config;
 
 import com.connectchat.security.CustomAccessDeniedHandler;
 import com.connectchat.security.CustomAuthenticationEntryPoint;
+import com.connectchat.security.TokenAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * Spring Security Configuration.
@@ -24,6 +26,7 @@ import org.springframework.security.web.SecurityFilterChain;
  * - BCrypt password hashing strategy.
  * - Declarative endpoint authorization rules.
  * - Session-based stateful authentication with HttpOnly cookies.
+ * - TokenAuthenticationFilter for concurrent multi-tab isolation.
  * - Integration with WebSocket handshake endpoints (/ws/**).
  */
 @Configuration
@@ -34,13 +37,16 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final TokenAuthenticationFilter tokenAuthenticationFilter;
 
     public SecurityConfig(UserDetailsService userDetailsService,
                           CustomAuthenticationEntryPoint authenticationEntryPoint,
-                          CustomAccessDeniedHandler accessDeniedHandler) {
+                          CustomAccessDeniedHandler accessDeniedHandler,
+                          TokenAuthenticationFilter tokenAuthenticationFilter) {
         this.userDetailsService = userDetailsService;
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.accessDeniedHandler = accessDeniedHandler;
+        this.tokenAuthenticationFilter = tokenAuthenticationFilter;
     }
 
     @Bean
@@ -103,6 +109,7 @@ public class SecurityConfig {
             );
 
         http.authenticationProvider(authenticationProvider());
+        http.addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

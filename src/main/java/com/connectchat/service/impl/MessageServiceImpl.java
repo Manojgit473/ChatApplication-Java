@@ -3,6 +3,7 @@ package com.connectchat.service.impl;
 import com.connectchat.dto.request.EditMessageRequest;
 import com.connectchat.dto.request.SendMessageRequest;
 import com.connectchat.dto.response.MessageDto;
+import com.connectchat.entity.Attachment;
 import com.connectchat.entity.Conversation;
 import com.connectchat.entity.ConversationMember;
 import com.connectchat.entity.Message;
@@ -11,10 +12,12 @@ import com.connectchat.enums.ConversationType;
 import com.connectchat.enums.GroupRole;
 import com.connectchat.enums.MessageStatus;
 import com.connectchat.enums.MessageType;
+import com.connectchat.enums.OnlineStatus;
 import com.connectchat.exception.BadRequestException;
 import com.connectchat.exception.ForbiddenException;
 import com.connectchat.exception.ResourceNotFoundException;
 import com.connectchat.mapper.MessageMapper;
+import com.connectchat.repository.AttachmentRepository;
 import com.connectchat.repository.BlockedUserRepository;
 import com.connectchat.repository.ConversationMemberRepository;
 import com.connectchat.repository.ConversationRepository;
@@ -58,6 +61,7 @@ public class MessageServiceImpl implements MessageService {
     private final ConversationMemberRepository conversationMemberRepository;
     private final UserRepository userRepository;
     private final BlockedUserRepository blockedUserRepository;
+    private final AttachmentRepository attachmentRepository;
     private final MessageMapper messageMapper;
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -66,6 +70,7 @@ public class MessageServiceImpl implements MessageService {
                               ConversationMemberRepository conversationMemberRepository,
                               UserRepository userRepository,
                               BlockedUserRepository blockedUserRepository,
+                              AttachmentRepository attachmentRepository,
                               MessageMapper messageMapper,
                               @Lazy SimpMessagingTemplate messagingTemplate) {
         this.messageRepository = messageRepository;
@@ -73,6 +78,7 @@ public class MessageServiceImpl implements MessageService {
         this.conversationMemberRepository = conversationMemberRepository;
         this.userRepository = userRepository;
         this.blockedUserRepository = blockedUserRepository;
+        this.attachmentRepository = attachmentRepository;
         this.messageMapper = messageMapper;
         this.messagingTemplate = messagingTemplate;
     }
@@ -121,12 +127,24 @@ public class MessageServiceImpl implements MessageService {
             }
         }
 
+        // Determine initial status: if direct chat and recipient is online, mark as DELIVERED
+        MessageStatus initialStatus = MessageStatus.SENT;
+        if (conversation.getType() == ConversationType.DIRECT && conversation.getMembers() != null) {
+            for (ConversationMember member : conversation.getMembers()) {
+                if (!member.getUser().getId().equals(senderId)) {
+                    if (member.getUser().getOnlineStatus() == OnlineStatus.ONLINE) {
+                        initialStatus = MessageStatus.DELIVERED;
+                    }
+                }
+            }
+        }
+
         Message message = new Message();
         message.setConversation(conversation);
         message.setSender(sender);
         message.setContent(request.getContent() != null ? request.getContent().trim() : "");
         message.setType(request.getType() != null ? request.getType() : MessageType.TEXT);
-        message.setStatus(MessageStatus.SENT);
+        message.setStatus(initialStatus);
         message.setIdempotencyKey(request.getIdempotencyKey());
 
         // Handle Threaded Reply
@@ -140,6 +158,21 @@ public class MessageServiceImpl implements MessageService {
 
         Message savedMessage = messageRepository.save(message);
 
+        // Link any uploaded attachments
+        if (request.getAttachmentIds() != null && !request.getAttachmentIds().isEmpty()) {
+            List<Attachment> attachments = attachmentRepository.findAllById(request.getAttachmentIds());
+            for (Attachment att : attachments) {
+                if (att.getUploader().getId().equals(senderId)) {
+                    att.setMessage(savedMessage);
+                    if (!savedMessage.getAttachments().contains(att)) {
+                        savedMessage.getAttachments().add(att);
+                    }
+                }
+            }
+            attachmentRepository.saveAll(attachments);
+            savedMessage = messageRepository.save(savedMessage);
+        }
+
         // Update conversation lastMessageAt
         conversation.setLastMessageAt(savedMessage.getCreatedAt());
         conversationRepository.save(conversation);
@@ -148,6 +181,13 @@ public class MessageServiceImpl implements MessageService {
 
         // Real-time broadcast to conversation topic
         messagingTemplate.convertAndSend("/topic/conversations/" + conversationId, messageDto);
+
+        // Real-time broadcast to all conversation members' personal topics
+        if (conversation.getMembers() != null) {
+            for (ConversationMember member : conversation.getMembers()) {
+                messagingTemplate.convertAndSend("/topic/users/" + member.getUser().getId() + "/messages", messageDto);
+            }
+        }
 
         return messageDto;
     }

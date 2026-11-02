@@ -15,6 +15,7 @@ import java.util.Optional;
  * Demonstrates:
  * - Query derivation mechanism based on method names.
  * - Named parameter JPQL queries with :param binding for SQL injection prevention.
+ * - Multi-criteria search by Name, Mobile Number, Email, and Username.
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -23,17 +24,28 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByPhoneNumber(String phoneNumber);
+
+    @Query("SELECT u FROM User u WHERE u.phoneNumber = :phone " +
+           "OR u.phoneNumber = CONCAT('+91 ', :phone) " +
+           "OR u.phoneNumber = CONCAT('+91', :phone) " +
+           "OR (u.phoneNumber IS NOT NULL AND u.phoneNumber LIKE CONCAT('%', :phone))")
+    Optional<User> findByFlexiblePhoneNumber(@Param("phone") String phone);
+
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
 
-    @Query("SELECT u FROM User u WHERE u.id != :currentUserId AND u.enabled = true AND " +
-           "(LOWER(u.username) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-           "LOWER(u.displayName) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+    boolean existsByPhoneNumber(String phoneNumber);
+
+    @Query("SELECT u FROM User u WHERE u.id != :currentUserId AND u.enabled = true AND (" +
+           "LOWER(u.displayName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(u.email) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(u.username) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "(u.phoneNumber IS NOT NULL AND u.phoneNumber LIKE CONCAT('%', :query, '%'))) " +
            "ORDER BY u.displayName ASC")
     List<User> searchUsers(@Param("query") String query, @Param("currentUserId") Long currentUserId);
 
     @Query("SELECT u FROM User u WHERE u.id != :currentUserId AND u.enabled = true ORDER BY u.displayName ASC")
     List<User> findAllExceptCurrent(@Param("currentUserId") Long currentUserId);
 }
-

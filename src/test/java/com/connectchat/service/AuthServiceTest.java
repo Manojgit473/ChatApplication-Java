@@ -3,9 +3,11 @@ package com.connectchat.service;
 import com.connectchat.dto.request.RegisterRequest;
 import com.connectchat.dto.response.UserProfileDto;
 import com.connectchat.entity.User;
+import com.connectchat.exception.BadRequestException;
 import com.connectchat.exception.ConflictException;
 import com.connectchat.mapper.UserMapper;
 import com.connectchat.repository.UserRepository;
+import com.connectchat.security.SessionTokenService;
 import com.connectchat.service.impl.AuthServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +41,9 @@ class AuthServiceTest {
     @Mock
     private PresenceService presenceService;
 
+    @Mock
+    private SessionTokenService sessionTokenService;
+
     @InjectMocks
     private AuthServiceImpl authService;
 
@@ -46,7 +51,7 @@ class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
-        registerRequest = new RegisterRequest("testuser", "test@example.com", "password123", "Test User");
+        registerRequest = new RegisterRequest("testuser", "test@example.com", "Password@123", "Test User", "9876543210");
     }
 
     @Test
@@ -87,6 +92,35 @@ class AuthServiceTest {
 
         assertThrows(ConflictException.class, () -> authService.register(registerRequest));
         verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void register_WhenDuplicatePhone_ShouldThrowConflictException() {
+        registerRequest.setPhoneNumber("9876543210");
+        when(userRepository.existsByUsername("testuser")).thenReturn(false);
+        when(userRepository.existsByEmail("test@example.com")).thenReturn(false);
+        when(userRepository.existsByPhoneNumber("+91 9876543210")).thenReturn(true);
+
+        assertThrows(ConflictException.class, () -> authService.register(registerRequest));
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void register_WhenInvalidEmail_ShouldThrowBadRequestException() {
+        registerRequest.setEmail("invalid-email-format");
+        assertThrows(BadRequestException.class, () -> authService.register(registerRequest));
+    }
+
+    @Test
+    void register_WhenInvalidIndianPhone_ShouldThrowBadRequestException() {
+        registerRequest.setPhoneNumber("12345"); // invalid length & series
+        assertThrows(BadRequestException.class, () -> authService.register(registerRequest));
+    }
+
+    @Test
+    void register_WhenWeakPassword_ShouldThrowBadRequestException() {
+        registerRequest.setPassword("simple"); // no upper, no digits, no symbols, <8
+        assertThrows(BadRequestException.class, () -> authService.register(registerRequest));
     }
 }
 

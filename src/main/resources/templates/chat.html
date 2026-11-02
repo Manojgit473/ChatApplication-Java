@@ -45,14 +45,6 @@
                         <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                     </svg>
                 </button>
-
-                <!-- Syllabus Viva Demo Trigger -->
-                <button class="nav-btn" id="vivaDemoNavBtn" title="College Syllabus Live Demo (Hibernate Session, Reflection, Serialization)">
-                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                    </svg>
-                </button>
             </div>
 
             <div class="nav-footer">
@@ -172,7 +164,7 @@
 
                     <div class="composer-input-row">
                         <!-- Attachment Upload Button & Hidden Input -->
-                        <input type="file" id="fileInput" class="hidden">
+                        <input type="file" id="fileInput" class="hidden" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar,.7z">
                         <button class="composer-btn" id="attachFileBtn" title="Attach file or image">
                             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
@@ -235,12 +227,25 @@
                 <div class="avatar details-avatar" id="detailsAvatar">?</div>
                 <h4 class="details-name" id="detailsName">Name</h4>
                 <p class="details-bio" id="detailsBio">Bio</p>
+                <div class="details-contact-info" style="margin-top: 10px; font-size: 13px; color: var(--text-secondary); text-align: center;">
+                    <div id="detailsPhone" style="margin-bottom: 4px;"></div>
+                    <div id="detailsEmail"></div>
+                </div>
             </div>
 
             <div class="details-section hidden" id="detailsMembersSection">
-                <h5 class="details-section-title">Participants</h5>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h5 class="details-section-title" style="margin-bottom: 0;">Participants (<span id="detailsMemberCount">0</span>)</h5>
+                    <button type="button" id="openAddMemberBtn" class="btn-teal" style="font-size: 11px; padding: 4px 10px; border-radius: 12px; height: auto; display: flex; align-items: center; gap: 4px;">
+                        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="width: 12px; height: 12px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Add Member
+                    </button>
+                </div>
                 <div id="detailsMembersList">
                     <!-- Member items -->
+                </div>
+                <div id="groupActionButtons" style="margin-top: 18px; display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Dynamic action buttons (Leave / Delete) -->
                 </div>
             </div>
         </aside>
@@ -261,7 +266,7 @@
             <div class="modal-body">
                 <div class="search-input-wrapper" style="margin-bottom: 16px;">
                     <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <input type="text" id="userSearchInput" class="search-input" placeholder="Search registered users by username or display name...">
+                    <input type="text" id="userSearchInput" class="search-input" placeholder="Search by 10-digit mobile number, email, or name...">
                 </div>
                 <div id="userSearchResults" style="max-height: 260px; overflow-y: auto;">
                     <div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 13px;">Type to search users</div>
@@ -288,32 +293,47 @@
                         <input type="text" id="groupDescription" class="form-input" placeholder="Purpose or topic of this group">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Select Initial Members</label>
-                        <div id="groupMembersSelectionList" style="max-height: 180px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px;">
-                            <label style="display: flex; align-items: center; gap: 8px; padding: 6px; font-size: 13px;">
-                                <input type="checkbox" class="group-member-checkbox" value="2" checked>
-                                <span>Samira Khan (@samira)</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; padding: 6px; font-size: 13px;">
-                                <input type="checkbox" class="group-member-checkbox" value="3" checked>
-                                <span>Jordan Lee (@jordan)</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; padding: 6px; font-size: 13px;">
-                                <input type="checkbox" class="group-member-checkbox" value="4">
-                                <span>Elena Rostova (@elena)</span>
-                            </label>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <label class="form-label" style="margin-bottom: 0;">Add Members</label>
+                            <span id="groupSelectedCountBadge" style="font-size: 11px; background: rgba(18, 140, 126, 0.12); color: var(--primary-teal); padding: 2px 8px; border-radius: 12px; font-weight: 600;">0 selected</span>
+                        </div>
+                        <input type="text" id="groupMemberSearchInput" class="form-input" placeholder="Search contacts by name, mobile number, or email..." style="margin-bottom: 8px;">
+                        <div id="groupMembersSelectionList" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 6px; display: flex; flex-direction: column; gap: 4px;">
+                            <div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 13px;">Loading contacts...</div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-secondary modal-close-btn">Cancel</button>
-                    <button type="submit" class="btn-teal">Create Group</button>
+                    <button type="submit" class="btn-teal" id="createGroupSubmitBtn">Create Group</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal 3: Profile & Settings -->
+    <!-- Modal 3: Add Member to Group -->
+    <div class="modal-overlay hidden" id="addMemberModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Member to Group</h3>
+                <button class="icon-btn modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Search Contact to Add</label>
+                    <input type="text" id="addMemberSearchInput" class="form-input" placeholder="Search by name, 10-digit mobile, or email...">
+                </div>
+                <div id="addMemberListContainer" style="max-height: 240px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 6px; display: flex; flex-direction: column; gap: 4px;">
+                    <div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 13px;">Loading contacts...</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary modal-close-btn">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Profile & Settings -->
     <div class="modal-overlay hidden" id="profileModal">
         <div class="modal-card">
             <div class="modal-header">
@@ -324,8 +344,19 @@
                 <form id="profileForm">
                     <h4 style="font-size: 14px; margin-bottom: 12px; color: var(--dark-teal);">Profile Information</h4>
                     <div class="form-group">
-                        <label class="form-label" for="profileDisplayName">Display Name</label>
+                        <label class="form-label" for="profileDisplayName">Full Name</label>
                         <input type="text" id="profileDisplayName" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="profilePhoneNumber">Mobile Number (India +91)</label>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="padding: 8px 12px; background: var(--bg-surface-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); font-weight: 600; color: var(--dark-teal); font-size: 13px; white-space: nowrap;">🇮🇳 +91</span>
+                            <input type="tel" id="profilePhoneNumber" class="form-input" placeholder="9876543210" maxlength="10" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="profileEmail">Email Address</label>
+                        <input type="email" id="profileEmail" class="form-input" readonly style="background: var(--bg-surface-secondary); opacity: 0.85;">
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="profileBio">Bio / Status</label>
@@ -352,30 +383,6 @@
                     </div>
                     <button type="submit" class="btn-secondary">Update Password</button>
                 </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal 4: Syllabus Demonstration Modal (For College Viva!) -->
-    <div class="modal-overlay hidden" id="vivaDemoModal">
-        <div class="modal-card" style="max-width: 680px;">
-            <div class="modal-header">
-                <h3 class="modal-title">College Syllabus Demonstrator</h3>
-                <button class="icon-btn modal-close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="demo-tabs">
-                    <button class="demo-tab-btn active" data-demo="hibernate">Hibernate Session & Tx</button>
-                    <button class="demo-tab-btn" data-demo="reflection">Reflection API</button>
-                    <button class="demo-tab-btn" data-demo="serialization">Serialization</button>
-                    <button class="demo-tab-btn" data-demo="generics">Generics & Streams</button>
-                </div>
-
-                <div style="margin-bottom: 12px;">
-                    <button type="button" class="btn-teal" id="runDemoBtn">Execute Live Demo on Server</button>
-                </div>
-
-                <pre class="demo-output-pre" id="demoOutput">Select a tab above and click "Execute Live Demo on Server" to demonstrate that specific syllabus concept running against Spring Boot and MySQL.</pre>
             </div>
         </div>
     </div>

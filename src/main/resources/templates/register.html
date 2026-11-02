@@ -20,38 +20,78 @@
                     </svg>
                 </div>
                 <h1 class="auth-title">Create Account</h1>
-                <p class="auth-subtitle">Join Connect Chat with soft teal modern design</p>
+                <p class="auth-subtitle">Join Connect Chat with real-time messaging</p>
             </div>
 
             <div id="alertBox" class="alert-box alert-danger hidden"></div>
 
-            <form id="registerForm">
+            <form id="registerForm" autocomplete="off" novalidate>
                 <div class="form-group">
-                    <label class="form-label" for="displayName">Full / Display Name</label>
-                    <input type="text" id="displayName" class="form-input" placeholder="e.g. Alex Morgan" required autocomplete="name">
+                    <label class="form-label" for="displayName">Full Name</label>
+                    <input type="text" id="displayName" class="form-input" placeholder="e.g. Alex Morgan" required autocomplete="off" autofocus>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="username">Username</label>
-                    <input type="text" id="username" class="form-input" placeholder="e.g. alex" required autocomplete="username">
+                    <label class="form-label" for="phoneNumber">Mobile Number (India +91)</label>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="padding: 10px 14px; background: var(--bg-surface-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-weight: 600; color: var(--dark-teal); font-size: 14px; white-space: nowrap;">🇮🇳 +91</span>
+                        <input type="tel" id="phoneNumber" class="form-input" placeholder="10-digit mobile number (e.g. 9876543210)" maxlength="10" required autocomplete="off" style="flex: 1;">
+                    </div>
+                    <span id="phoneFeedback" class="validation-hint">Enter your 10-digit mobile number starting with 6, 7, 8, or 9</span>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="email">Email Address</label>
-                    <input type="email" id="email" class="form-input" placeholder="e.g. alex@example.com" required autocomplete="email">
+                    <input type="email" id="email" class="form-input" placeholder="e.g. alex@example.com" required autocomplete="off">
+                    <span id="emailFeedback" class="validation-hint">Enter a valid email address (e.g. name@domain.com)</span>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="password">Password (min 6 characters)</label>
-                    <input type="password" id="password" class="form-input" placeholder="••••••••" required autocomplete="new-password">
+                    <label class="form-label" for="password">Strong Password</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="password" class="form-input" placeholder="Enter strong password (e.g. Secret@123)" required autocomplete="new-password">
+                        <button type="button" class="password-toggle-btn" id="togglePasswordBtn" title="Toggle password visibility">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Interactive Password Strength Meter & Checklist -->
+                    <div class="password-strength-container" id="passwordStrengthBox">
+                        <div class="strength-header">
+                            <span>Password Strength:</span>
+                            <span id="strengthStatusText" class="strength-status-text">None</span>
+                        </div>
+                        <div class="strength-meter-bar">
+                            <div id="strengthMeterFill" class="strength-meter-fill"></div>
+                        </div>
+                        <ul class="strength-checklist">
+                            <li id="ruleLength" class="strength-item unmet"><span class="rule-icon">○</span> 8+ characters</li>
+                            <li id="ruleUpper" class="strength-item unmet"><span class="rule-icon">○</span> 1 uppercase (A-Z)</li>
+                            <li id="ruleLower" class="strength-item unmet"><span class="rule-icon">○</span> 1 lowercase (a-z)</li>
+                            <li id="ruleDigit" class="strength-item unmet"><span class="rule-icon">○</span> 1 number (0-9)</li>
+                            <li id="ruleSpecial" class="strength-item unmet" style="grid-column: span 2;"><span class="rule-icon">○</span> 1 special symbol (@$!%*?&#...)</li>
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword" class="form-input" placeholder="••••••••" required autocomplete="new-password">
+                    <div class="password-input-wrapper">
+                        <input type="password" id="confirmPassword" class="form-input" placeholder="Re-enter your password" required autocomplete="new-password">
+                        <button type="button" class="password-toggle-btn" id="toggleConfirmPasswordBtn" title="Toggle password visibility">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                    <span id="confirmPasswordFeedback" class="validation-hint">Passwords must match</span>
                 </div>
 
-                <button type="submit" class="btn-primary">Create Account</button>
+                <button type="submit" class="btn-primary" id="registerSubmitBtn">Create Account</button>
             </form>
 
             <div class="auth-footer">
@@ -64,4 +104,3 @@
     <script th:src="@{/js/auth.js}" src="/js/auth.js"></script>
 </body>
 </html>
-

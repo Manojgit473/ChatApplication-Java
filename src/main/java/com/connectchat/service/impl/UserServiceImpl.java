@@ -12,6 +12,7 @@ import com.connectchat.mapper.UserMapper;
 import com.connectchat.repository.BlockedUserRepository;
 import com.connectchat.repository.UserRepository;
 import com.connectchat.service.UserService;
+import com.connectchat.util.StringValidationUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +61,10 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
         user.setDisplayName(request.getDisplayName().trim());
+        if (request.getPhoneNumber() != null) {
+            String normalizedPhone = com.connectchat.util.PhoneNumberUtils.normalizeIndianPhoneNumber(request.getPhoneNumber());
+            user.setPhoneNumber(normalizedPhone);
+        }
         if (request.getBio() != null) {
             user.setBio(request.getBio().trim());
         }
@@ -83,6 +88,11 @@ public class UserServiceImpl implements UserService {
 
         if (request.getNewPassword().equals(request.getCurrentPassword())) {
             throw new BadRequestException("New password cannot be identical to current password");
+        }
+
+        String passwordError = StringValidationUtils.validatePasswordStrength(request.getNewPassword());
+        if (passwordError != null) {
+            throw new BadRequestException(passwordError);
         }
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));

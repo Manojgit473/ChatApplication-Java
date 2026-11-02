@@ -64,18 +64,22 @@ public class DataInitializer implements ApplicationRunner {
         String encodedPassword = passwordEncoder.encode("password123");
 
         User alex = new User("alex", "alex@connectchat.local", encodedPassword, "Alex Morgan");
+        alex.setPhoneNumber("+91 9876543210");
         alex.setBio("Full-Stack Engineer & Open Source enthusiast");
         alex.setOnlineStatus(OnlineStatus.ONLINE);
 
         User samira = new User("samira", "samira@connectchat.local", encodedPassword, "Samira Khan");
+        samira.setPhoneNumber("+91 9876543211");
         samira.setBio("UI/UX Designer | Clean interfaces & soft palettes");
         samira.setOnlineStatus(OnlineStatus.ONLINE);
 
         User jordan = new User("jordan", "jordan@connectchat.local", encodedPassword, "Jordan Lee");
+        jordan.setPhoneNumber("+91 9876543212");
         jordan.setBio("Backend Developer & Distributed Systems researcher");
         jordan.setOnlineStatus(OnlineStatus.OFFLINE);
 
         User elena = new User("elena", "elena@connectchat.local", encodedPassword, "Elena Rostova");
+        elena.setPhoneNumber("+91 9876543213");
         elena.setBio("DevOps & Cloud architecture apprentice");
         elena.setOnlineStatus(OnlineStatus.OFFLINE);
 

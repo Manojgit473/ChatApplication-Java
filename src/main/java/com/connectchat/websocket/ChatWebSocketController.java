@@ -4,6 +4,8 @@ import com.connectchat.dto.request.SendMessageRequest;
 import com.connectchat.dto.request.TypingNotificationRequest;
 import com.connectchat.dto.response.TypingIndicatorDto;
 import com.connectchat.dto.response.UserSummaryDto;
+import com.connectchat.entity.User;
+import com.connectchat.repository.UserRepository;
 import com.connectchat.security.CustomUserDetails;
 import com.connectchat.service.ConversationService;
 import com.connectchat.service.MessageService;
@@ -18,6 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
+import java.util.Optional;
 
 /**
  * Spring STOMP WebSocket Controller.
@@ -35,15 +38,18 @@ public class ChatWebSocketController {
     private final MessageService messageService;
     private final ConversationService conversationService;
     private final UserService userService;
+    private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
     public ChatWebSocketController(MessageService messageService,
                                    ConversationService conversationService,
                                    UserService userService,
+                                   UserRepository userRepository,
                                    SimpMessagingTemplate messagingTemplate) {
         this.messageService = messageService;
         this.conversationService = conversationService;
         this.userService = userService;
+        this.userRepository = userRepository;
         this.messagingTemplate = messagingTemplate;
     }
 
@@ -70,14 +76,20 @@ public class ChatWebSocketController {
         }
 
         CustomUserDetails userDetails = extractUserDetails(principal);
-        UserSummaryDto userSummary = new UserSummaryDto(
-                userDetails.getId(),
-                userDetails.getUsername(),
-                userDetails.getDisplayName(),
-                null,
-                null,
-                null
-        );
+        UserSummaryDto userSummary;
+        if (userDetails != null) {
+            userSummary = new UserSummaryDto(
+                    userDetails.getId(),
+                    userDetails.getUsername(),
+                    userDetails.getDisplayName(),
+                    null,
+                    null,
+                    null
+            );
+        } else {
+            User user = userRepository.findById(userId).orElse(null);
+            userSummary = user != null ? new UserSummaryDto(user.getId(), user.getUsername(), user.getDisplayName(), null, null, null) : null;
+        }
 
         TypingIndicatorDto typingDto = new TypingIndicatorDto(conversationId, userSummary, request.isTyping());
         messagingTemplate.convertAndSend("/topic/conversations/" + conversationId + "/typing", typingDto);
@@ -93,7 +105,29 @@ public class ChatWebSocketController {
 
     private Long extractUserId(Principal principal) {
         CustomUserDetails userDetails = extractUserDetails(principal);
-        return userDetails != null ? userDetails.getId() : null;
+        if (userDetails != null) {
+            return userDetails.getId();
+        }
+        if (principal != null && principal.getName() != null) {
+            String name = principal.getName().trim();
+            String tenDigits = com.connectchat.util.PhoneNumberUtils.extract10Digit(name);
+            if (tenDigits != null) {
+                Optional<User> byPhone = userRepository.findByPhoneNumber("+91 " + tenDigits)
+                        .or(() -> userRepository.findByPhoneNumber("+91" + tenDigits))
+                        .or(() -> userRepository.findByPhoneNumber(tenDigits))
+                        .or(() -> userRepository.findByFlexiblePhoneNumber(tenDigits));
+                if (byPhone.isPresent()) {
+                    return byPhone.get().getId();
+                }
+            }
+            return userRepository.findByUsername(name)
+                    .or(() -> userRepository.findByEmail(name))
+                    .or(() -> userRepository.findByPhoneNumber(name))
+                    .or(() -> userRepository.findByFlexiblePhoneNumber(name))
+                    .map(User::getId)
+                    .orElse(null);
+        }
+        return null;
     }
 
     private CustomUserDetails extractUserDetails(Principal principal) {
@@ -105,4 +139,3 @@ public class ChatWebSocketController {
         return null;
     }
 }
-
