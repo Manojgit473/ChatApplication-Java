@@ -37,9 +37,17 @@ public class MessageMapper {
         dto.setEditedAt(message.getEditedAt());
         dto.setDeleted(message.isDeleted());
         dto.setCreatedAt(message.getCreatedAt());
+        dto.setExpiresAt(message.getExpiresAt());
+        dto.setExpiryDuration(message.getExpiryDuration());
+
+        boolean isExp = message.isExpired() || (message.getExpiresAt() != null && message.getExpiresAt().isBefore(java.time.Instant.now()));
+        dto.setExpired(isExp);
 
         if (message.isDeleted()) {
             dto.setContent("This message was deleted");
+            dto.setAttachments(new ArrayList<>());
+        } else if (isExp) {
+            dto.setContent("This message has self-destructed");
             dto.setAttachments(new ArrayList<>());
         } else {
             dto.setContent(message.getContent());

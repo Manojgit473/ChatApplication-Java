@@ -91,6 +91,7 @@ const Api = (() => {
             markAsRead: (id) => request(`/api/conversations/${id}/read`, { method: 'POST' }),
             setMute: (id, muted) => request(`/api/conversations/${id}/mute?muted=${muted}`, { method: 'POST' }),
             setArchive: (id, archived) => request(`/api/conversations/${id}/archive?archived=${archived}`, { method: 'POST' }),
+            summarize: (id) => request(`/api/conversations/${id}/summarize`, { method: 'POST' }),
             getExportUrl: (id) => `/api/conversations/${id}/export`
         },
         groups: {

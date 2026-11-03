@@ -27,6 +27,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
            "LEFT JOIN FETCH m.sender " +
            "LEFT JOIN FETCH m.replyTo " +
            "WHERE m.conversation.id = :conversationId " +
+           "AND m.expired = false " +
            "ORDER BY m.createdAt DESC")
     Page<Message> findByConversationIdOrderByCreatedAtDesc(@Param("conversationId") Long conversationId, Pageable pageable);
 
@@ -34,11 +35,28 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     Optional<Message> findFirstByConversationIdOrderByCreatedAtDesc(Long conversationId);
 
+    @Query("SELECT m FROM Message m " +
+           "LEFT JOIN FETCH m.conversation " +
+           "LEFT JOIN FETCH m.sender " +
+           "WHERE m.expired = false " +
+           "AND m.expiresAt IS NOT NULL " +
+           "AND m.expiresAt <= :now")
+    List<Message> findPendingExpiredMessages(@Param("now") java.time.Instant now);
+
+    @Query("SELECT m FROM Message m " +
+           "LEFT JOIN FETCH m.sender " +
+           "WHERE m.conversation.id = :conversationId " +
+           "AND m.deleted = false " +
+           "AND m.expired = false " +
+           "ORDER BY m.createdAt ASC")
+    List<Message> findActiveMessagesForSummary(@Param("conversationId") Long conversationId);
+
     @Query("SELECT COUNT(m) FROM Message m " +
            "WHERE m.conversation.id = :conversationId " +
            "AND (:lastReadId IS NULL OR m.id > :lastReadId) " +
            "AND m.sender.id != :userId " +
-           "AND m.deleted = false")
+           "AND m.deleted = false " +
+           "AND m.expired = false")
     long countUnreadMessages(@Param("conversationId") Long conversationId, 
                              @Param("lastReadId") Long lastReadId, 
                              @Param("userId") Long userId);
@@ -47,6 +65,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
            "LEFT JOIN FETCH m.sender " +
            "WHERE m.conversation.id = :conversationId " +
            "AND m.deleted = false " +
+           "AND m.expired = false " +
            "AND LOWER(m.content) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
            "ORDER BY m.createdAt DESC")
     List<Message> searchMessages(@Param("conversationId") Long conversationId, @Param("keyword") String keyword);
@@ -55,6 +74,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
            "JOIN m.starredByUsers u " +
            "LEFT JOIN FETCH m.sender " +
            "WHERE u.id = :userId " +
+           "AND m.expired = false " +
            "ORDER BY m.createdAt DESC")
     List<Message> findStarredMessagesByUser(@Param("userId") Long userId);
 

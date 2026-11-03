@@ -1250,5 +1250,286 @@
     .app-container.chat-open .chat-workspace {
         display: flex;
     }
+    .summary-grid {
+        grid-template-columns: 1fr !important;
+    }
 }
+
+/* --------------------------------------------------------
+   6. Innovative Feature: Self-Destructing Messages
+   -------------------------------------------------------- */
+.expiry-menu-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.expiry-menu {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-elevated);
+    min-width: 190px;
+    padding: 6px;
+    z-index: 200;
+}
+
+.expiry-menu-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    padding: 4px 8px 6px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 4px;
+}
+
+.expiry-opt {
+    width: 100%;
+    padding: 7px 10px;
+    font-size: 12px;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.expiry-opt:hover {
+    background: var(--bg-surface-secondary);
+}
+
+.expiry-opt.active {
+    color: var(--dark-teal);
+    font-weight: 600;
+    background: rgba(18, 140, 126, 0.08);
+}
+
+.custom-expiry-picker {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--border-color);
+}
+
+.custom-expiry-picker label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.expiry-active-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    background: rgba(245, 158, 11, 0.12);
+    border-left: 3px solid #f59e0b;
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: #b45309;
+    animation: slideUp 0.2s ease;
+}
+
+.expiry-pill-icon {
+    font-size: 14px;
+    margin-right: 6px;
+}
+
+.icon-btn-tiny {
+    background: transparent;
+    border: none;
+    color: #b45309;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.icon-btn-tiny:hover {
+    color: var(--status-danger);
+}
+
+/* Self-destructing message bubble styling */
+.message-bubble.self-destructing {
+    border: 1px solid rgba(245, 158, 11, 0.5) !important;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.12);
+    position: relative;
+}
+
+.message-expiry-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #d97706;
+    background: rgba(245, 158, 11, 0.15);
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 6px;
+}
+
+.message-expiry-badge.warning {
+    color: #dc2626;
+    background: rgba(239, 68, 68, 0.18);
+    animation: pulseBadge 1s infinite alternate;
+}
+
+@keyframes pulseBadge {
+    from { opacity: 0.8; transform: scale(1); }
+    to { opacity: 1; transform: scale(1.05); }
+}
+
+/* Disintegration animation when message expires */
+.message-row.disintegrating {
+    animation: disintegratePuff 0.6s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes disintegratePuff {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+        filter: blur(0);
+    }
+    50% {
+        transform: scale(1.03);
+        opacity: 0.5;
+        filter: blur(2px);
+    }
+    100% {
+        transform: scale(0.92);
+        opacity: 0;
+        filter: blur(8px);
+        height: 0;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+}
+
+/* --------------------------------------------------------
+   7. Innovative Feature: AI Smart Chat Summarizer
+   -------------------------------------------------------- */
+.header-action-btn.ai-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--dark-teal);
+    background: linear-gradient(135deg, rgba(18, 140, 126, 0.12), rgba(90, 175, 165, 0.22));
+    border: 1px solid rgba(18, 140, 126, 0.35);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.header-action-btn.ai-btn:hover {
+    background: linear-gradient(135deg, rgba(18, 140, 126, 0.22), rgba(90, 175, 165, 0.35));
+    border-color: var(--primary-teal);
+    box-shadow: 0 2px 8px rgba(18, 140, 126, 0.2);
+    transform: translateY(-1px);
+}
+
+.modal-card.modal-lg {
+    max-width: 680px;
+    width: 92%;
+}
+
+.summary-loading-box {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.summary-spinner {
+    width: 44px;
+    height: 44px;
+    border: 3px solid rgba(18, 140, 126, 0.2);
+    border-top-color: var(--primary-teal);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto;
+}
+
+.summary-error-box {
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.summary-card {
+    background: var(--bg-surface-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+}
+
+.summary-card.overview-card {
+    background: linear-gradient(to right, rgba(18, 140, 126, 0.05), rgba(90, 175, 165, 0.08));
+    border-left: 3px solid var(--primary-teal);
+}
+
+.summary-card-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-primary);
+}
+
+.summary-overview-p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.topics-tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.topic-tag {
+    background: rgba(18, 140, 126, 0.12);
+    color: var(--dark-teal);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(18, 140, 126, 0.25);
+}
+
+.summary-bullet-list {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--text-primary);
+}
+
+.summary-bullet-list li {
+    margin-bottom: 4px;
+}
+
 

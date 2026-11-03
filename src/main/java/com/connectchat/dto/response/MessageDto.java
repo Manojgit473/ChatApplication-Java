@@ -25,6 +25,9 @@ public class MessageDto {
     private boolean starred;
     private List<AttachmentDto> attachments = new ArrayList<>();
     private Instant createdAt;
+    private Instant expiresAt;
+    private boolean expired;
+    private String expiryDuration;
 
     public MessageDto() {
     }
@@ -139,6 +142,30 @@ public class MessageDto {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Instant getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(Instant expiresAt) {
+        this.expiresAt = expiresAt;
+    }
+
+    public boolean isExpired() {
+        return expired;
+    }
+
+    public void setExpired(boolean expired) {
+        this.expired = expired;
+    }
+
+    public String getExpiryDuration() {
+        return expiryDuration;
+    }
+
+    public void setExpiryDuration(String expiryDuration) {
+        this.expiryDuration = expiryDuration;
     }
 }
 

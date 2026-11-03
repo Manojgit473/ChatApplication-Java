@@ -3,10 +3,12 @@ package com.connectchat.controller;
 import com.connectchat.dto.request.CreateConversationRequest;
 import com.connectchat.dto.request.SendMessageRequest;
 import com.connectchat.dto.response.ApiResponse;
+import com.connectchat.dto.response.ChatSummaryDto;
 import com.connectchat.dto.response.ConversationDetailDto;
 import com.connectchat.dto.response.ConversationSummaryDto;
 import com.connectchat.dto.response.MessageDto;
 import com.connectchat.security.SecurityUtils;
+import com.connectchat.service.ChatSummaryService;
 import com.connectchat.service.ConversationService;
 import com.connectchat.service.MessageService;
 import jakarta.validation.Valid;
@@ -29,10 +31,14 @@ public class ConversationController {
 
     private final ConversationService conversationService;
     private final MessageService messageService;
+    private final ChatSummaryService chatSummaryService;
 
-    public ConversationController(ConversationService conversationService, MessageService messageService) {
+    public ConversationController(ConversationService conversationService,
+                                  MessageService messageService,
+                                  ChatSummaryService chatSummaryService) {
         this.conversationService = conversationService;
         this.messageService = messageService;
+        this.chatSummaryService = chatSummaryService;
     }
 
     @GetMapping
@@ -98,6 +104,13 @@ public class ConversationController {
         Long currentUserId = SecurityUtils.getCurrentUserId();
         conversationService.archiveConversation(id, currentUserId, archived);
         return ResponseEntity.ok(ApiResponse.success("Archive status updated"));
+    }
+
+    @PostMapping("/{id}/summarize")
+    public ResponseEntity<ApiResponse<ChatSummaryDto>> summarizeConversation(@PathVariable Long id) {
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+        ChatSummaryDto summary = chatSummaryService.summarizeConversation(id, currentUserId);
+        return ResponseEntity.ok(ApiResponse.success("Conversation summary generated", summary));
     }
 
     @GetMapping("/{id}/export")

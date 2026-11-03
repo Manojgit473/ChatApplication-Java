@@ -90,5 +90,63 @@ class MessageServiceTest {
         verify(messageRepository, times(1)).save(any(Message.class));
         verify(messagingTemplate, times(1)).convertAndSend(eq("/topic/conversations/10"), eq(dto));
     }
+
+    @Test
+    void sendMessage_With10sExpiry_ShouldCalculateExpiresAt() {
+        Conversation conv = new Conversation();
+        conv.setId(10L);
+        conv.setType(ConversationType.DIRECT);
+
+        User sender = new User("sender", "s@test.com", "pass", "Sender User");
+        sender.setId(1L);
+
+        when(conversationRepository.findById(10L)).thenReturn(Optional.of(conv));
+        when(conversationMemberRepository.existsByConversationIdAndUserId(10L, 1L)).thenReturn(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(sender));
+
+        when(messageRepository.save(any(Message.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(messageMapper.toDto(any(), any())).thenReturn(new MessageDto());
+
+        SendMessageRequest req = new SendMessageRequest("Expiring in 10s", MessageType.TEXT, null, "keyExpiry10");
+        req.setExpiryDuration("10s");
+
+        messageService.sendMessage(10L, 1L, req);
+
+        verify(messageRepository).save(argThat(msg ->
+                msg.getExpiresAt() != null &&
+                "10s".equals(msg.getExpiryDuration()) &&
+                !msg.isExpired()
+        ));
+    }
+
+    @Test
+    void sendMessage_WithCustomExpiry_ShouldUseProvidedTimestamp() {
+        Conversation conv = new Conversation();
+        conv.setId(10L);
+        conv.setType(ConversationType.DIRECT);
+
+        User sender = new User("sender", "s@test.com", "pass", "Sender User");
+        sender.setId(1L);
+
+        when(conversationRepository.findById(10L)).thenReturn(Optional.of(conv));
+        when(conversationMemberRepository.existsByConversationIdAndUserId(10L, 1L)).thenReturn(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(sender));
+
+        when(messageRepository.save(any(Message.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(messageMapper.toDto(any(), any())).thenReturn(new MessageDto());
+
+        java.time.Instant customTime = java.time.Instant.now().plusSeconds(3600);
+        SendMessageRequest req = new SendMessageRequest("Expiring Custom", MessageType.TEXT, null, "keyExpiryCustom");
+        req.setExpiryDuration("custom");
+        req.setExpiresAt(customTime);
+
+        messageService.sendMessage(10L, 1L, req);
+
+        verify(messageRepository).save(argThat(msg ->
+                customTime.equals(msg.getExpiresAt()) &&
+                "custom".equals(msg.getExpiryDuration()) &&
+                !msg.isExpired()
+        ));
+    }
 }
 

@@ -147,6 +147,32 @@ public class MessageServiceImpl implements MessageService {
         message.setStatus(initialStatus);
         message.setIdempotencyKey(request.getIdempotencyKey());
 
+        // Self-Destructing / Expiring Message Configuration
+        if (request.getExpiryDuration() != null && !request.getExpiryDuration().trim().isEmpty()
+                && !"none".equalsIgnoreCase(request.getExpiryDuration().trim())) {
+            String duration = request.getExpiryDuration().trim().toLowerCase();
+            message.setExpiryDuration(duration);
+            Instant now = Instant.now();
+            if ("10s".equals(duration)) {
+                message.setExpiresAt(now.plusSeconds(10));
+            } else if ("1m".equals(duration)) {
+                message.setExpiresAt(now.plusSeconds(60));
+            } else if ("1h".equals(duration)) {
+                message.setExpiresAt(now.plusSeconds(3600));
+            } else if ("custom".equals(duration) && request.getExpiresAt() != null) {
+                if (request.getExpiresAt().isAfter(now)) {
+                    message.setExpiresAt(request.getExpiresAt());
+                } else {
+                    message.setExpiresAt(now.plusSeconds(10));
+                }
+            } else if (request.getExpiresAt() != null && request.getExpiresAt().isAfter(now)) {
+                message.setExpiresAt(request.getExpiresAt());
+            }
+        } else if (request.getExpiresAt() != null && request.getExpiresAt().isAfter(Instant.now())) {
+            message.setExpiresAt(request.getExpiresAt());
+            message.setExpiryDuration("custom");
+        }
+
         // Handle Threaded Reply
         if (request.getReplyToId() != null) {
             messageRepository.findById(request.getReplyToId()).ifPresent(replyTo -> {

@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * - Spring Boot 3 auto-configuration and component scanning.
  * - Declarative transaction management via @EnableTransactionManagement.
  * - Spring AOP cross-cutting concerns via @EnableAspectJAutoProxy.
+ * - Background task scheduling via @EnableScheduling for message self-destruction.
  */
 @SpringBootApplication
 @ComponentScan(
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 )
 @EnableTransactionManagement
 @EnableAspectJAutoProxy
+@EnableScheduling
 public class ConnectChatApplication {
 
     public static void main(String[] args) {

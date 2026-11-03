@@ -62,6 +62,15 @@ public class Message extends BaseEntity {
     @Column(name = "is_deleted", nullable = false)
     private boolean deleted = false;
 
+    @Column(name = "expires_at")
+    private Instant expiresAt;
+
+    @Column(name = "is_expired", nullable = false)
+    private boolean expired = false;
+
+    @Column(name = "expiry_duration", length = 30)
+    private String expiryDuration;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "message_stars",
@@ -165,6 +174,30 @@ public class Message extends BaseEntity {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public Instant getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(Instant expiresAt) {
+        this.expiresAt = expiresAt;
+    }
+
+    public boolean isExpired() {
+        return expired;
+    }
+
+    public void setExpired(boolean expired) {
+        this.expired = expired;
+    }
+
+    public String getExpiryDuration() {
+        return expiryDuration;
+    }
+
+    public void setExpiryDuration(String expiryDuration) {
+        this.expiryDuration = expiryDuration;
     }
 
     public Set<User> getStarredByUsers() {

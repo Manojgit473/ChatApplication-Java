@@ -3,6 +3,7 @@ package com.connectchat.dto.request;
 import com.connectchat.enums.MessageType;
 import jakarta.validation.constraints.Size;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,10 @@ public class SendMessageRequest {
     @Size(max = 64, message = "Idempotency key cannot exceed 64 characters")
     private String idempotencyKey;
 
+    private String expiryDuration;
+
+    private Instant expiresAt;
+
     public SendMessageRequest() {
     }
 
@@ -31,6 +36,15 @@ public class SendMessageRequest {
         this.type = type != null ? type : MessageType.TEXT;
         this.replyToId = replyToId;
         this.idempotencyKey = idempotencyKey;
+    }
+
+    public SendMessageRequest(String content, MessageType type, Long replyToId, String idempotencyKey, String expiryDuration, Instant expiresAt) {
+        this.content = content;
+        this.type = type != null ? type : MessageType.TEXT;
+        this.replyToId = replyToId;
+        this.idempotencyKey = idempotencyKey;
+        this.expiryDuration = expiryDuration;
+        this.expiresAt = expiresAt;
     }
 
     public String getContent() {
@@ -71,6 +85,22 @@ public class SendMessageRequest {
 
     public void setIdempotencyKey(String idempotencyKey) {
         this.idempotencyKey = idempotencyKey;
+    }
+
+    public String getExpiryDuration() {
+        return expiryDuration;
+    }
+
+    public void setExpiryDuration(String expiryDuration) {
+        this.expiryDuration = expiryDuration;
+    }
+
+    public Instant getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(Instant expiresAt) {
+        this.expiresAt = expiresAt;
     }
 }
 

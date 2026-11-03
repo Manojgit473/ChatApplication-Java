@@ -18,7 +18,10 @@ const ChatApp = (() => {
         isTyping: false,
         selectedGroupMemberIds: new Set(),
         cachedGroupContacts: [],
-        availableAddMembers: []
+        availableAddMembers: [],
+        currentExpiry: { duration: 'none', label: 'No Expiry', expiresAt: null },
+        countdownInterval: null,
+        activeSummaryData: null
     };
 
     // DOM Elements Cache
@@ -50,6 +53,7 @@ const ChatApp = (() => {
         bindEvents();
         initWebSocket();
         loadConversations();
+        startCountdownTicker();
     }
 
     function cacheDom() {
@@ -169,6 +173,66 @@ const ChatApp = (() => {
 
         // Password change form submit
         document.getElementById('passwordForm')?.addEventListener('submit', handleChangePassword);
+
+        // --- Feature 1: Self-Destructing Messages Event Listeners ---
+        const expiryToggleBtn = document.getElementById('expiryToggleBtn');
+        const expiryMenu = document.getElementById('expiryMenu');
+        if (expiryToggleBtn && expiryMenu) {
+            expiryToggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                expiryMenu.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!expiryMenu.classList.contains('hidden') && !expiryMenu.contains(e.target) && !expiryToggleBtn.contains(e.target)) {
+                    expiryMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        document.querySelectorAll('.expiry-opt').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const exp = opt.dataset.expiry;
+                if (exp === 'none') {
+                    setExpiry('none', 'No Expiry', null);
+                } else if (exp === '10s') {
+                    setExpiry('10s', '10 Seconds', null);
+                } else if (exp === '1m') {
+                    setExpiry('1m', '1 Minute', null);
+                } else if (exp === '1h') {
+                    setExpiry('1h', '1 Hour', null);
+                } else if (exp === 'custom') {
+                    const customContainer = document.getElementById('customExpiryContainer');
+                    if (customContainer) {
+                        customContainer.classList.toggle('hidden');
+                        if (!customContainer.classList.contains('hidden')) {
+                            const now = new Date(Date.now() + 5000);
+                            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                            const minVal = now.toISOString().slice(0, 16);
+                            const input = document.getElementById('customExpiryInput');
+                            if (input) {
+                                input.min = minVal;
+                                if (!input.value) input.value = minVal;
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        document.getElementById('applyCustomExpiryBtn')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            handleApplyCustomExpiry();
+        });
+
+        document.getElementById('clearExpiryBtn')?.addEventListener('click', clearExpiryState);
+
+        // --- Feature 2: AI-Powered Smart Chat Summarizer Event Listeners ---
+        document.getElementById('summarizeChatBtn')?.addEventListener('click', handleSummarizeChat);
+        document.getElementById('detailsSummarizeBtn')?.addEventListener('click', handleSummarizeChat);
+        document.getElementById('retrySummaryBtn')?.addEventListener('click', handleSummarizeChat);
+        document.getElementById('copySummaryBtn')?.addEventListener('click', handleCopySummary);
     }
 
     // ----------------------------------------------------
@@ -366,8 +430,10 @@ const ChatApp = (() => {
         }
 
         let lastDateStr = null;
+        const now = Date.now();
+        const activeMessages = state.messages.filter(m => !m.expired && (!m.expiresAt || new Date(m.expiresAt).getTime() > now));
 
-        state.messages.forEach(m => {
+        activeMessages.forEach(m => {
             // Date Divider
             const msgDateStr = formatDate(m.createdAt);
             if (msgDateStr !== lastDateStr) {
@@ -523,16 +589,32 @@ const ChatApp = (() => {
         const editedLabel = m.edited ? '<span style="font-size:10px; opacity:0.8;">(edited)</span>' : '';
         const contentHtml = m.content ? `<div>${escapeHtml(m.content)}</div>` : '';
 
+        // Self-destructing expiry indicator
+        const isExpiring = m.expiresAt && !m.expired;
+        let expiryBadgeHtml = '';
+        if (isExpiring) {
+            const remainingMs = new Date(m.expiresAt).getTime() - Date.now();
+            if (remainingMs > 0) {
+                const isWarn = remainingMs <= 10000;
+                expiryBadgeHtml = `
+                    <span class="message-expiry-badge ${isWarn ? 'warning' : ''}" data-expires="${m.expiresAt}" data-id="${m.id}" title="Self-destruct timer">
+                        <span>⏱️</span>
+                        <span class="countdown-text">${formatCountdown(remainingMs)}</span>
+                    </span>`;
+            }
+        }
+
         row.innerHTML = `
             <div class="message-bubble-wrapper">
                 ${senderNameHtml}
-                <div class="message-bubble ${isSentByMe ? 'sent' : 'received'}">
+                <div class="message-bubble ${isSentByMe ? 'sent' : 'received'} ${isExpiring ? 'self-destructing' : ''}">
                     ${replyQuoteHtml}
                     ${attachmentHtml}
                     ${contentHtml}
                     <div class="message-meta">
                         ${editedLabel}
                         <span>${formatTime(m.createdAt)}</span>
+                        ${expiryBadgeHtml}
                         ${receiptHtml}
                     </div>
                 </div>
@@ -579,6 +661,14 @@ const ChatApp = (() => {
             idempotencyKey: idempotencyKey
         };
 
+        // Attach self-destruct expiry if selected
+        if (state.currentExpiry && state.currentExpiry.duration && state.currentExpiry.duration !== 'none') {
+            payload.expiryDuration = state.currentExpiry.duration;
+            if (state.currentExpiry.duration === 'custom' && state.currentExpiry.expiresAt) {
+                payload.expiresAt = state.currentExpiry.expiresAt;
+            }
+        }
+
         const originalText = el.messageInput.value;
         // Optimistically clear input for smooth typing feel
         el.messageInput.value = '';
@@ -590,6 +680,8 @@ const ChatApp = (() => {
             const res = await Api.conversations.sendMessage(state.activeConversationId, payload);
             if (res && res.data) {
                 handleIncomingMessage(res.data);
+                // Clear ephemeral expiry state back to default
+                clearExpiryState();
             } else {
                 // If response is null or failed, restore the typed message so user never loses their text
                 el.messageInput.value = originalText;
@@ -621,10 +713,19 @@ const ChatApp = (() => {
                     idempotencyKey: 'att_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8)
                 };
 
+                // Attach self-destruct expiry if selected
+                if (state.currentExpiry && state.currentExpiry.duration && state.currentExpiry.duration !== 'none') {
+                    payload.expiryDuration = state.currentExpiry.duration;
+                    if (state.currentExpiry.duration === 'custom' && state.currentExpiry.expiresAt) {
+                        payload.expiresAt = state.currentExpiry.expiresAt;
+                    }
+                }
+
                 // Send via REST to guarantee MySQL persistence and trigger STOMP broadcast to all active conversation subscribers
                 const msgRes = await Api.conversations.sendMessage(state.activeConversationId, payload);
                 if (msgRes && msgRes.data) {
                     handleIncomingMessage(msgRes.data);
+                    clearExpiryState();
                 }
                 showToast('File sent to conversation!', 'success');
             }
@@ -662,6 +763,28 @@ const ChatApp = (() => {
     // ----------------------------------------------------
     function handleIncomingMessage(messageDto) {
         if (!messageDto) return;
+
+        // Handle expired message notification from scheduler or real-time event
+        if (messageDto.expired) {
+            state.messages = state.messages.filter(m => m.id !== messageDto.id);
+            if (el.messagesContainer) {
+                const row = el.messagesContainer.querySelector(`.message-row[data-id="${messageDto.id}"]`);
+                if (row) {
+                    row.classList.add('disintegrating');
+                    setTimeout(() => {
+                        if (row && row.parentNode) {
+                            row.remove();
+                        }
+                    }, 550);
+                }
+            }
+            const conv = state.conversations.find(c => c.id === messageDto.conversationId);
+            if (conv && conv.lastMessage && conv.lastMessage.id === messageDto.id) {
+                conv.lastMessage = null;
+                renderConversationsList();
+            }
+            return;
+        }
 
         const isSentByMe = isSentByCurrentUser(messageDto.sender);
 
@@ -1431,12 +1554,277 @@ const ChatApp = (() => {
         });
     }
 
+    // ----------------------------------------------------
+    // Innovative Feature 1: Self-Destructing Messages
+    // ----------------------------------------------------
+    function setExpiry(duration, label, expiresAt = null) {
+        state.currentExpiry = { duration, label, expiresAt };
+
+        document.querySelectorAll('.expiry-opt').forEach(opt => {
+            opt.classList.toggle('active', opt.dataset.expiry === duration);
+        });
+
+        const pill = document.getElementById('composerExpiryPill');
+        const pillLabel = document.getElementById('composerExpiryLabel');
+
+        if (duration === 'none') {
+            if (pill) pill.classList.add('hidden');
+        } else {
+            if (pillLabel) pillLabel.textContent = label;
+            if (pill) pill.classList.remove('hidden');
+        }
+
+        const menu = document.getElementById('expiryMenu');
+        if (menu) menu.classList.add('hidden');
+        const customContainer = document.getElementById('customExpiryContainer');
+        if (customContainer) customContainer.classList.add('hidden');
+    }
+
+    function clearExpiryState() {
+        setExpiry('none', 'No Expiry', null);
+        const customInput = document.getElementById('customExpiryInput');
+        if (customInput) customInput.value = '';
+    }
+
+    function handleApplyCustomExpiry() {
+        const input = document.getElementById('customExpiryInput');
+        if (!input || !input.value) {
+            showToast('Please select a date and time', 'error');
+            return;
+        }
+
+        const date = new Date(input.value);
+        if (isNaN(date.getTime()) || date.getTime() <= Date.now() + 2000) {
+            showToast('Please select a future time (at least 5 seconds from now)', 'error');
+            return;
+        }
+
+        const isoStr = date.toISOString();
+        const formatted = date.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' +
+            date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        setExpiry('custom', `Custom (${formatted})`, isoStr);
+        showToast('Self-destruct timer set for ' + formatted, 'success');
+    }
+
+    function formatCountdown(ms) {
+        if (ms <= 0) return '0s';
+        const totalSec = Math.ceil(ms / 1000);
+        if (totalSec < 60) {
+            return totalSec + 's';
+        }
+        const mins = Math.floor(totalSec / 60);
+        const secs = totalSec % 60;
+        if (mins < 60) {
+            return `${mins}m ${secs > 0 ? secs + 's' : ''}`.trim();
+        }
+        const hours = Math.floor(mins / 60);
+        const remMins = mins % 60;
+        if (hours < 24) {
+            return `${hours}h ${remMins > 0 ? remMins + 'm' : ''}`.trim();
+        }
+        const days = Math.floor(hours / 24);
+        return `${days}d`;
+    }
+
+    function startCountdownTicker() {
+        if (state.countdownInterval) {
+            clearInterval(state.countdownInterval);
+        }
+        state.countdownInterval = setInterval(() => {
+            const badges = document.querySelectorAll('.message-expiry-badge[data-expires]');
+            if (!badges.length) return;
+
+            const now = Date.now();
+            badges.forEach(badge => {
+                const expiresStr = badge.getAttribute('data-expires');
+                const msgId = badge.getAttribute('data-id');
+                if (!expiresStr) return;
+
+                const expiryTime = new Date(expiresStr).getTime();
+                const diff = expiryTime - now;
+
+                if (diff <= 0) {
+                    const row = badge.closest('.message-row');
+                    if (row && !row.classList.contains('disintegrating')) {
+                        row.classList.add('disintegrating');
+                        setTimeout(() => {
+                            if (row && row.parentNode) {
+                                row.remove();
+                            }
+                            if (msgId) {
+                                state.messages = state.messages.filter(m => String(m.id) !== String(msgId));
+                            }
+                        }, 550);
+                    }
+                } else {
+                    const textEl = badge.querySelector('.countdown-text');
+                    if (textEl) {
+                        textEl.textContent = formatCountdown(diff);
+                    }
+                    if (diff <= 10000) {
+                        badge.classList.add('warning');
+                    } else {
+                        badge.classList.remove('warning');
+                    }
+                }
+            });
+        }, 500);
+    }
+
+    // ----------------------------------------------------
+    // Innovative Feature 2: AI Chat Summarizer
+    // ----------------------------------------------------
+    async function handleSummarizeChat() {
+        if (!state.activeConversationId) {
+            showToast('Please open a conversation to summarize', 'error');
+            return;
+        }
+
+        openModal('chatSummaryModal');
+
+        const loadingState = document.getElementById('summaryLoadingState');
+        const errorState = document.getElementById('summaryErrorState');
+        const contentState = document.getElementById('summaryContentState');
+        const errorMsg = document.getElementById('summaryErrorMessage');
+        const copyBtn = document.getElementById('copySummaryBtn');
+
+        if (loadingState) loadingState.classList.remove('hidden');
+        if (errorState) errorState.classList.add('hidden');
+        if (contentState) contentState.classList.add('hidden');
+        if (copyBtn) copyBtn.disabled = true;
+
+        try {
+            const res = await Api.conversations.summarize(state.activeConversationId);
+            if (!res || !res.data) {
+                throw new Error('No summary returned from server');
+            }
+
+            const data = res.data;
+            state.activeSummaryData = data;
+
+            // Overview
+            const overviewEl = document.getElementById('summaryOverviewText');
+            if (overviewEl) overviewEl.textContent = data.overview || 'No conversation content available to summarize.';
+
+            // Topics
+            const topicsContainer = document.getElementById('summaryTopicsList');
+            if (topicsContainer) {
+                if (data.topics && data.topics.length > 0) {
+                    topicsContainer.innerHTML = data.topics.map(t => `<span class="topic-tag">#${escapeHtml(t)}</span>`).join('');
+                } else {
+                    topicsContainer.innerHTML = '<span style="color:var(--text-muted); font-size:12px;">No specific topics tagged.</span>';
+                }
+            }
+
+            // Bullet Lists
+            renderSummaryList('summaryDecisionsList', data.decisions, 'No key decisions noted.');
+            renderSummaryList('summaryKeyInfoList', data.keyInformation, 'No specific information highlights noted.');
+            renderSummaryList('summaryActionItemsList', data.actionItems, 'No pending action items or tasks.');
+            renderSummaryList('summaryDeadlinesList', data.deadlines, 'No deadlines or critical dates mentioned.');
+
+            // Footer Badge
+            const modelBadge = document.getElementById('summaryModelBadge');
+            if (modelBadge) {
+                const count = data.messageCountAnalyzed || 0;
+                modelBadge.textContent = `AI: ${data.aiModelUsed || 'Gemini'} • ${count} message${count === 1 ? '' : 's'} analyzed`;
+            }
+
+            if (loadingState) loadingState.classList.add('hidden');
+            if (contentState) contentState.classList.remove('hidden');
+            if (copyBtn) copyBtn.disabled = false;
+
+        } catch (err) {
+            console.error('[AI SUMMARY] Error:', err);
+            if (loadingState) loadingState.classList.add('hidden');
+            if (errorState) errorState.classList.remove('hidden');
+            if (errorMsg) errorMsg.textContent = err.message || 'AI service temporarily unavailable. Please try again.';
+        }
+    }
+
+    function renderSummaryList(containerId, items, emptyMessage) {
+        const ul = document.getElementById(containerId);
+        if (!ul) return;
+        ul.innerHTML = '';
+
+        if (!items || items.length === 0) {
+            const li = document.createElement('li');
+            li.style.color = 'var(--text-muted)';
+            li.style.fontStyle = 'italic';
+            li.textContent = emptyMessage;
+            ul.appendChild(li);
+            return;
+        }
+
+        items.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            ul.appendChild(li);
+        });
+    }
+
+    function handleCopySummary() {
+        const data = state.activeSummaryData;
+        if (!data) {
+            showToast('No summary available to copy', 'error');
+            return;
+        }
+
+        const lines = [];
+        lines.push('=== CONNECT CHAT AI SUMMARY ===');
+        lines.push(`Generated: ${new Date().toLocaleString()}`);
+        if (state.activeConversationDetail?.title) {
+            lines.push(`Conversation: ${state.activeConversationDetail.title}`);
+        }
+        lines.push('');
+        lines.push('📌 EXECUTIVE OVERVIEW');
+        lines.push(data.overview || 'N/A');
+        lines.push('');
+
+        if (data.topics && data.topics.length > 0) {
+            lines.push('💬 TOPICS');
+            lines.push(data.topics.map(t => `#${t}`).join(' '));
+            lines.push('');
+        }
+
+        if (data.decisions && data.decisions.length > 0) {
+            lines.push('✅ DECISIONS MADE');
+            data.decisions.forEach(d => lines.push(`- ${d}`));
+            lines.push('');
+        }
+
+        if (data.keyInformation && data.keyInformation.length > 0) {
+            lines.push('ℹ️ KEY INFORMATION');
+            data.keyInformation.forEach(k => lines.push(`- ${k}`));
+            lines.push('');
+        }
+
+        if (data.actionItems && data.actionItems.length > 0) {
+            lines.push('📋 TASKS & ACTION ITEMS');
+            data.actionItems.forEach(a => lines.push(`- ${a}`));
+            lines.push('');
+        }
+
+        if (data.deadlines && data.deadlines.length > 0) {
+            lines.push('⏰ DEADLINES & DATES');
+            data.deadlines.forEach(dl => lines.push(`- ${dl}`));
+            lines.push('');
+        }
+
+        const fullText = lines.join('\n');
+        navigator.clipboard.writeText(fullText)
+            .then(() => showToast('Summary copied to clipboard!', 'success'))
+            .catch(() => showToast('Failed to copy summary to clipboard', 'error'));
+    }
+
     return {
         init,
         setReplyMessage,
         promptEditMessage,
         handleDeleteMessage,
-        handleToggleStar
+        handleToggleStar,
+        handleSummarizeChat,
+        clearExpiryState
     };
 })();
 
